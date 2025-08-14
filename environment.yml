@@ -5,18 +5,16 @@ channels:
 dependencies:
   - python=3.11
 ##### RUN #####
-#---# plaid
-  - plaid=0.1.6
-  - muscat=2.4.1
-#---# pip dependencies
   - pip
   - pip:
+    - pyplaid==0.1.7
+    - torch
+    - torch-geometric
+##### DEV #####
     - pre-commit
     - ruff
     - pyright[nodejs]
     - pytest
-    - torch
-    - torch-geometric
     - sphinx
     - sphinx-autoapi
     - myst-nb
