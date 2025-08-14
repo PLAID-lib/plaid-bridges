@@ -1,0 +1,67 @@
+[build-system]
+requires = [
+    "setuptools>=60",
+    "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plaid-bridges"
+description = "PLAID bridges for machine learning frameworks"
+authors = [
+    { name = "Safran", email = "fabien.casenave@safrangroup.com" }
+]
+requires-python = ">=3.9, <3.13"
+keywords=[
+    "machine learning",
+    "physics",
+    "data-model",
+    "Safran",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = [
+    "plaid==0.1.6",
+    "torch",
+    "torch-geometric"
+]
+
+dynamic = ["version"]
+
+[tool.setuptools_scm]
+write_to = "src/plaid_bridges/_version.py"
+
+[project.urls]
+homepage = "https://github.com/PLAID-lib/plaid-bridges"
+documentation = "https://plaid-bridges.readthedocs.io"
+repository = "https://github.com/PLAID-lib/plaid-bridges"
+
+[project.license]
+text="BSD 3-Clause License"
+files=["LICENSE.txt"]
+
+[project.readme]
+file="README.md"
+content-type = "text/markdown"
+
+[tool.setuptools]
+platforms = [
+    "Linux",
+    "Mac OS-X",
+    "Unix",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["plaid-bridges*"]

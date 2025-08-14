@@ -1,0 +1,9 @@
+.vscode/
+src/plaid_bridges.egg-info/
+datasets/
+*.pyc
+__pycache__
+src/plaid_bridges/_version.py
+docs/_build/
+docs/autoapi/
+public/
