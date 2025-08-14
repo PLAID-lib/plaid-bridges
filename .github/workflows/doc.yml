@@ -20,21 +20,20 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Conda with Mamba
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
         with:
-          use-mamba: true
-          auto-activate-base: false
-          miniforge-variant: Miniforge3
+          python-version: "3.11"
 
-      - name: Create environment
-        run: |
-          mamba env create -f environment.yml
-          mamba run -n plaid-bridges pip install -e .
+      - name: Upgrade pip
+        run: pip install --upgrade pip setuptools wheel
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
       - name: Compile documentation
         run: |
           cd docs
-          mamba run -n plaid-bridges bash generate_doc.sh
+          ./generate_doc.sh
