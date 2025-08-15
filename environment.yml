@@ -7,16 +7,22 @@ dependencies:
 ##### RUN #####
   - pip
   - pip:
-    - h5py
     - pyplaid==0.1.7
     - torch
     - torch-geometric
 ##### DEV #####
-    - pre-commit
+#---# testing
+    - pytest
+    - pytest-cov
+#---# code formatters
     - ruff
     - pyright[nodejs]
-    - pytest
+#---# dev
+    - pre-commit
+#---# doc
     - sphinx
     - sphinx-autoapi
     - myst-nb
+    - myst-parser
+    - nbconvert
     - furo

@@ -27,12 +27,13 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Scientific/Engineering :: Mathematics",
 ]
 dependencies = [
-    "plaid==0.1.6",
+    "plaid==0.1.7",
     "torch",
     "torch-geometric"
 ]
@@ -65,3 +66,18 @@ platforms = [
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["plaid-bridges*"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "pyright[nodejs]",
+    "pre-commit",
+    "sphinx",
+    "sphinx-autoapi",
+    "myst-nb",
+    "myst-parser",
+    "nbconvert",
+    "furo",
+]
