@@ -11,8 +11,9 @@
    :align: center
    :width: 300px
 
+PLAID (Physics Learning AI Datamodel) integrations into machine learning frameworks.
 
-PLAID (Physics Learning AI Datamodel) is a library proposing an implementation for a datamodel tailored for AI and ML learning of physics problems.
+PLAID is a library proposing an implementation for a datamodel tailored for AI and ML learning of physics problems.
 It has been developped at SafranTech, the research center of `Safran group <https://www.safran-group.com/>`_
 
 The code is hosted on `GitHub <https://github.com/PLAID-lib/plaid-bridges>`_
