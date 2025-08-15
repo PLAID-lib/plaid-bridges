@@ -9,10 +9,9 @@ sphinx:
 
 build:
   os: "ubuntu-24.04"
-  jobs:
-    pre_build:
-      - git fetch origin --unshallow
-      - git rev-list --count HEAD
+  commands:
+    - git fetch origin --unshallow
+    - git rev-list --count HEAD
 
 python:
   version: 3.11
