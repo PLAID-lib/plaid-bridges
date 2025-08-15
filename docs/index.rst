@@ -13,6 +13,11 @@
 
 PLAID (Physics Learning AI Datamodel) integrations into machine learning frameworks.
 
+
+.. warning::
+
+   The code is still in its initial configuration stages, consider not using it for the moment. This is also the case for tentative PyPi packages being configured.
+
 PLAID is a library proposing an implementation for a datamodel tailored for AI and ML learning of physics problems.
 It has been developped at SafranTech, the research center of `Safran group <https://www.safran-group.com/>`_
 
