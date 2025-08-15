@@ -8,13 +8,13 @@ sphinx:
   configuration: docs/conf.py
 
 build:
-  os: "ubuntu-22.04"
+  os: "ubuntu-24.04"
   tools:
     python: "3.11"
-  jobs:
-    pre_build:
-      - git fetch origin --unshallow
-      - git rev-list --count HEAD
+  # jobs:
+  #   pre_build:
+  #     - git fetch origin --unshallow
+  #     - git rev-list --count HEAD
 
 python:
   install:
