@@ -11,6 +11,9 @@ build:
   os: "ubuntu-24.04"
   tools:
     python: "3.11"
+  # -------------------------------------------------------------------
+  # To uncomment when needed (typically when more than 50 commits)
+  # -------------------------------------------------------------------
   # jobs:
   #   pre_build:
   #     - git fetch origin --unshallow
