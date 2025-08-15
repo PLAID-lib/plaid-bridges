@@ -51,3 +51,12 @@ jobs:
         shell: powershell
         run: |
           pytest tests
+
+      - name: Upload coverage to Codecov (Linux and python 3.11 only)
+        if: runner.os == 'Linux' && matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          name: python-${{ matrix.python-version }}
+          verbose: true
