@@ -37,4 +37,4 @@ jobs:
       - name: Compile documentation
         run: |
           cd docs
-          ./generate_doc.sh
+          conda run -n plaid-bridges bash ./generate_doc.sh
