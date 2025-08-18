@@ -25,10 +25,10 @@ jobs:
       - name: Set up Conda with Mamba
         uses: conda-incubator/setup-miniconda@v3
         with:
-          activate-environment: plaid-bridges
           environment-file: environment.yml
-          python-version: 3.11
+          activate-environment: plaid-bridges
           auto-activate-base: false
+          conda-remove-defaults: true
 
       - name: Compile documentation
         run: |
