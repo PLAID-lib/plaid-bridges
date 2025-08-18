@@ -4,10 +4,10 @@ channels:
   - nodefaults
 dependencies:
   - python=3.11
+  - plaid=0.1.7
 ##### RUN #####
   - pip
   - pip:
-    - pyplaid==0.1.7
     - torch
     - torch-geometric
 ##### DEV #####
