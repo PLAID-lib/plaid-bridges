@@ -10,7 +10,7 @@ description = "PLAID bridges for machine learning frameworks"
 authors = [
     { name = "Safran", email = "fabien.casenave@safrangroup.com" }
 ]
-requires-python = ">=3.9, <3.14"
+requires-python = ">=3.9, <3.13"
 keywords=[
     "machine learning",
     "physics",

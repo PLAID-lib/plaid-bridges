@@ -25,14 +25,10 @@ jobs:
       - name: Set up Conda with Mamba
         uses: conda-incubator/setup-miniconda@v3
         with:
-          use-mamba: true
+          activate-environment: plaid-bridges
+          environment-file: environment.yml
+          python-version: 3.11
           auto-activate-base: false
-          miniforge-variant: Miniforge3
-
-      - name: Create environment
-        run: |
-          conda create -n plaid-bridges python=3.11 plaid=0.1.7 -c conda-forge
-          conda run -n plaid-bridges python -m pip install -e .[dev]
 
       - name: Compile documentation
         run: |
