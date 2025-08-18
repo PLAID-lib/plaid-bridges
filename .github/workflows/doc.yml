@@ -30,6 +30,11 @@ jobs:
           auto-activate-base: false
           conda-remove-defaults: true
 
+      - name: Install library
+        run: |
+          which pip
+          pip install -e .[dev]
+
       - name: Compile documentation
         run: |
           cd docs

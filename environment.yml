@@ -4,23 +4,25 @@ channels:
   - nodefaults
 dependencies:
   - python=3.11
-##### RUN #####
   - plaid=0.1.7
-  - torch
-  - torch-geometric
+##### RUN #####
+  - pip
+  - pip:
+    - torch
+    - torch-geometric
 ##### DEV #####
 #---# testing
-  - pytest
-  - pytest-cov
+    - pytest
+    - pytest-cov
 #---# code formatters
-  - ruff
-  - pyright[nodejs]
+    - ruff
+    - pyright[nodejs]
 #---# dev
-  - pre-commit
+    - pre-commit
 #---# doc
-  - sphinx
-  - sphinx-autoapi
-  - myst-nb
-  - myst-parser
-  - nbconvert
-  - furo
+    - sphinx
+    - sphinx-autoapi
+    - myst-nb
+    - myst-parser
+    - nbconvert
+    - furo
