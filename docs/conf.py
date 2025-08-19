@@ -29,6 +29,7 @@ sys.path.insert(0, str(basedir))
 sys.path.insert(0, str(basedir / "src" / "plaid_bridges"))
 # sys.path.insert(0, basedir / "tests")
 sys.path.insert(0, str(basedir / "examples"))
+sys.path.insert(0, str(basedir / "notebooks"))
 print(sys.path)
 
 
