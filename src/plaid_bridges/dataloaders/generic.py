@@ -1,6 +1,6 @@
 """Class implementing PyTorch loaders."""
 
-from typing import Optional
+from typing import Optional, Callable
 
 import torch
 from plaid.containers.dataset import Dataset
@@ -13,62 +13,42 @@ from torch.utils.data import DataLoader
 # TODO: maybe create a class with transform/inverse transform with these two functions ? (see the FNO notebook)
 
 
-#-----------------------------------------------------------------------------------------------------
-
-def _make_feat_id_hashable(feat_dict: dict):
-    return tuple(sorted(feat_dict.items()))
-
-def _can_stack_features(batch_features: list):
-    """Check if all elements have the same shape for stacking."""
-    shapes = [torch.as_tensor(f).shape for f in batch_features]
-    return len(set(shapes)) == 1
 
 
-
-#-----------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------
 class PlaidRawDataLoader(DataLoader):
     """PlaidSampleDataLoader."""
 
     def __init__(
         self,
         dataset: Dataset,
-        batch_size: int,
-        shuffle: bool,
         **kwargs,
     ):
         super().__init__(
             dataset,
-            batch_size,
-            shuffle,
             collate_fn=lambda batch: batch,
             **kwargs,
         )
 
-
-#-----------------------------------------------------------------------------------------------------
-class HeterogeneousPlaidDataLoader(DataLoader):
+# -----------------------------------------------------------------------------------------------------
+class PlaidDataLoader(DataLoader):
     """PlaidDataLoader."""
 
     def __init__(
         self,
         dataset: Dataset,
-        batch_size: int,
-        shuffle: bool,
+        collate_fn: Callable,
         in_feature_identifiers: list[FeatureIdentifier],
         out_feature_identifiers: Optional[list[FeatureIdentifier]] = None,
         **kwargs,
     ):
         super().__init__(
             dataset,
-            batch_size,
-            shuffle,
-            collate_fn=HeterogeneousCollater(
-                dataset, in_feature_identifiers, out_feature_identifiers
-            ),
+            collate_fn=collate_fn(dataset, in_feature_identifiers, out_feature_identifiers),
             **kwargs,
         )
 
-class HeterogeneousCollater:
+class BaseCollater:
     """Collater."""
 
     def __init__(
@@ -81,89 +61,201 @@ class HeterogeneousCollater:
         self.in_feature_identifiers = in_feature_identifiers
         self.out_feature_identifiers = out_feature_identifiers or []
 
-    def __call__(self, batch: list[Sample]):
+    @staticmethod
+    def _make_feat_id_hashable(feat_dict: dict):
+        return tuple(sorted(feat_dict.items()))
+
+    @staticmethod
+    def _can_stack_features(batch_features: list):
+        """Check if all elements have the same shape for stacking."""
+        shapes = [torch.as_tensor(f).shape for f in batch_features]
+        return len(set(shapes)) == 1
+
+    def _batch_features(self, batch: list[Sample]):
         """Collater's __call__."""
         batch_in_features = {
-            _make_feat_id_hashable(feat): [] for feat in self.in_feature_identifiers
+            self._make_feat_id_hashable(feat): [] for feat in self.in_feature_identifiers
         }
         batch_out_features = {
-            _make_feat_id_hashable(feat): [] for feat in self.out_feature_identifiers
+            self._make_feat_id_hashable(feat): [] for feat in self.out_feature_identifiers
         }
 
         # Group samples by features
         for sample in batch:
             for feat in self.in_feature_identifiers:
-                key = _make_feat_id_hashable(feat)
+                key = self._make_feat_id_hashable(feat)
                 batch_in_features[key].append(sample.get_feature_from_identifier(feat))
             for feat in self.out_feature_identifiers:
-                key = _make_feat_id_hashable(feat)
+                key = self._make_feat_id_hashable(feat)
                 batch_out_features[key].append(sample.get_feature_from_identifier(feat))
 
         return batch_in_features, batch_out_features
 
-#-----------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------
 
-class HomogeneousPlaidDataLoader(DataLoader):
-    """PlaidDataLoader."""
+class HeterogeneousCollater(BaseCollater):
+    """Collater."""
 
-    def __init__(
-        self,
-        dataset: Dataset,
-        batch_size: int,
-        shuffle: bool,
-        in_feature_identifiers: list[FeatureIdentifier],
-        out_feature_identifiers: Optional[list[FeatureIdentifier]] = None,
-        **kwargs,
-    ):
-        super().__init__(
-            dataset,
-            batch_size,
-            shuffle,
-            collate_fn=HomogeneousCollater(
-                dataset, in_feature_identifiers, out_feature_identifiers
-            ),
-            **kwargs,
-        )
+    def __call__(self, batch: list[Sample]):
+        return self._batch_features(batch)
 
-class HomogeneousCollater:
-    """HomogeneousCollater."""
+class HomogeneousCollater(BaseCollater):
+    """Collater."""
 
-    def __init__(
-        self,
-        dataset,
-        in_feature_identifiers: list[dict],
-        out_feature_identifiers: Optional[list[dict]] = None,
-    ):
-        self.dataset = dataset
-        self.in_feature_identifiers = in_feature_identifiers
-        self.out_feature_identifiers = out_feature_identifiers or []
+    def __call__(self, batch: list[Sample]):
+        """Collater's __call__."""
+        batch_in_features, batch_out_features = self._batch_features(batch)
 
-    def __call__(self, batch: list):
-        """SafeCollater's __call__."""
-        batch_in_features = {
-            _make_feat_id_hashable(feat): [] for feat in self.in_feature_identifiers
-        }
-        batch_out_features = {
-            _make_feat_id_hashable(feat): [] for feat in self.out_feature_identifiers
-        }
-
-        # Group samples by features
-        for sample in batch:
-            for feat in self.in_feature_identifiers:
-                key = _make_feat_id_hashable(feat)
-                batch_in_features[key].append(sample.get_feature_from_identifier(feat))
-            for feat in self.out_feature_identifiers:
-                key = _make_feat_id_hashable(feat)
-                batch_out_features[key].append(sample.get_feature_from_identifier(feat))
-
-        # Convert to tensors and stack only if shapes match
-        print("batch_in_features.keys() =", list[batch_in_features.keys()])
+        # Stack features
         for key in batch_in_features.keys():
-            assert _can_stack_features(batch_in_features[key]), f"features {key} are of different sizes in batch"
-            batch_in_features[key] = torch.stack([torch.as_tensor(v) for v in batch_in_features[key]])
-        print("batch_out_features.keys() =", list[batch_out_features.keys()])
+            assert self._can_stack_features(batch_in_features[key]), (
+                f"features {key} are of different sizes in batch"
+            )
+            batch_in_features[key] = torch.stack(
+                [torch.as_tensor(v) for v in batch_in_features[key]]
+            )
+
         for key in batch_out_features.keys():
-            assert _can_stack_features(batch_out_features[key]), f"features {key} are of different sizes in batch"
-            batch_out_features[key] = torch.stack([torch.as_tensor(v) for v in batch_out_features[key]])
+            assert self._can_stack_features(batch_out_features[key]), (
+                f"features {key} are of different sizes in batch"
+            )
+            batch_out_features[key] = torch.stack(
+                [torch.as_tensor(v) for v in batch_out_features[key]]
+            )
 
         return batch_in_features, batch_out_features
+
+# # -----------------------------------------------------------------------------------------------------
+# class HeterogeneousPlaidDataLoader(DataLoader):
+#     """PlaidDataLoader."""
+
+#     def __init__(
+#         self,
+#         dataset: Dataset,
+#         batch_size: int,
+#         shuffle: bool,
+#         in_feature_identifiers: list[FeatureIdentifier],
+#         out_feature_identifiers: Optional[list[FeatureIdentifier]] = None,
+#         **kwargs,
+#     ):
+#         super().__init__(
+#             dataset,
+#             batch_size,
+#             shuffle,
+#             collate_fn=HeterogeneousCollater(
+#                 dataset, in_feature_identifiers, out_feature_identifiers
+#             ),
+#             **kwargs,
+#         )
+
+
+# class HeterogeneousCollater:
+#     """Collater."""
+
+#     def __init__(
+#         self,
+#         dataset: Dataset,
+#         in_feature_identifiers: list[FeatureIdentifier],
+#         out_feature_identifiers: Optional[list[FeatureIdentifier]] = None,
+#     ):
+#         self.dataset = dataset
+#         self.in_feature_identifiers = in_feature_identifiers
+#         self.out_feature_identifiers = out_feature_identifiers or []
+
+#     def __call__(self, batch: list[Sample]):
+#         """Collater's __call__."""
+#         batch_in_features = {
+#             _make_feat_id_hashable(feat): [] for feat in self.in_feature_identifiers
+#         }
+#         batch_out_features = {
+#             _make_feat_id_hashable(feat): [] for feat in self.out_feature_identifiers
+#         }
+
+#         # Group samples by features
+#         for sample in batch:
+#             for feat in self.in_feature_identifiers:
+#                 key = _make_feat_id_hashable(feat)
+#                 batch_in_features[key].append(sample.get_feature_from_identifier(feat))
+#             for feat in self.out_feature_identifiers:
+#                 key = _make_feat_id_hashable(feat)
+#                 batch_out_features[key].append(sample.get_feature_from_identifier(feat))
+
+#         return batch_in_features, batch_out_features
+
+
+# # -----------------------------------------------------------------------------------------------------
+
+
+# class HomogeneousPlaidDataLoader(DataLoader):
+#     """PlaidDataLoader."""
+
+#     def __init__(
+#         self,
+#         dataset: Dataset,
+#         batch_size: int,
+#         shuffle: bool,
+#         in_feature_identifiers: list[FeatureIdentifier],
+#         out_feature_identifiers: Optional[list[FeatureIdentifier]] = None,
+#         **kwargs,
+#     ):
+#         super().__init__(
+#             dataset,
+#             batch_size,
+#             shuffle,
+#             collate_fn=HomogeneousCollater(
+#                 dataset, in_feature_identifiers, out_feature_identifiers
+#             ),
+#             **kwargs,
+#         )
+
+
+# class HomogeneousCollater:
+#     """HomogeneousCollater."""
+
+#     def __init__(
+#         self,
+#         dataset,
+#         in_feature_identifiers: list[dict],
+#         out_feature_identifiers: Optional[list[dict]] = None,
+#     ):
+#         self.dataset = dataset
+#         self.in_feature_identifiers = in_feature_identifiers
+#         self.out_feature_identifiers = out_feature_identifiers or []
+
+#     def __call__(self, batch: list):
+#         """SafeCollater's __call__."""
+#         batch_in_features = {
+#             _make_feat_id_hashable(feat): [] for feat in self.in_feature_identifiers
+#         }
+#         batch_out_features = {
+#             _make_feat_id_hashable(feat): [] for feat in self.out_feature_identifiers
+#         }
+
+#         # Group samples by features
+#         for sample in batch:
+#             for feat in self.in_feature_identifiers:
+#                 key = _make_feat_id_hashable(feat)
+#                 batch_in_features[key].append(sample.get_feature_from_identifier(feat))
+#             for feat in self.out_feature_identifiers:
+#                 key = _make_feat_id_hashable(feat)
+#                 batch_out_features[key].append(sample.get_feature_from_identifier(feat))
+
+#         # Convert to tensors and stack only if shapes match
+#         print("batch_in_features.keys() =", list[batch_in_features.keys()])
+#         for key in batch_in_features.keys():
+#             assert _can_stack_features(batch_in_features[key]), (
+#                 f"features {key} are of different sizes in batch"
+#             )
+#             batch_in_features[key] = torch.stack(
+#                 [torch.as_tensor(v) for v in batch_in_features[key]]
+#             )
+#         print("batch_out_features.keys() =", list[batch_out_features.keys()])
+#         for key in batch_out_features.keys():
+#             assert _can_stack_features(batch_out_features[key]), (
+#                 f"features {key} are of different sizes in batch"
+#             )
+#             batch_out_features[key] = torch.stack(
+#                 [torch.as_tensor(v) for v in batch_out_features[key]]
+#             )
+
+#         return batch_in_features, batch_out_features

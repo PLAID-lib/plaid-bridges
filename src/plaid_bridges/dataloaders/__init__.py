@@ -2,8 +2,9 @@
 
 from plaid_bridges.dataloaders.generic import (
     PlaidRawDataLoader,
-    HeterogeneousPlaidDataLoader,
-    HomogeneousPlaidDataLoader,
+    PlaidDataLoader,
+    HeterogeneousCollater,
+    HomogeneousCollater
 )
 
 # from plaid_bridges.dataloaders.torch import (
@@ -13,7 +14,8 @@ from plaid_bridges.dataloaders.generic import (
 
 __all__ = [
     "PlaidRawDataLoader",
-    "HeterogeneousPlaidDataLoader",
-    "HomogeneousPlaidDataLoader",
+    "PlaidDataLoader",
+    "HeterogeneousCollater",
+    "HomogeneousCollater",
     # "TorchTensorDataLoader",
 ]
