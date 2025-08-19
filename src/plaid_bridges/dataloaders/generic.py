@@ -1,6 +1,6 @@
 """Class implementing PyTorch loaders."""
 
-from typing import Optional, Callable
+from typing import Optional, Callable, Sequence
 
 import torch
 from plaid.containers.dataset import Dataset
@@ -99,6 +99,8 @@ class HeterogeneousCollater(BaseCollater):
     def __call__(self, batch: list[Sample]):
         return self._batch_features(batch)
 
+# -----------------------------------------------------------------------------------------------------
+
 class HomogeneousCollater(BaseCollater):
     """Collater."""
 
@@ -124,6 +126,41 @@ class HomogeneousCollater(BaseCollater):
             )
 
         return batch_in_features, batch_out_features
+
+
+# -----------------------------------------------------------------------------------------------------
+
+# class GridFieldAndScalarCollater(BaseCollater):
+
+#     def __init__(
+#         self,
+#         dimensions: Sequence[int],
+#     ):
+#         self.dimensions = dimensions
+
+#     def __call__(self, batch: list[Sample]):
+#         """Collater's __call__."""
+#         batch_in_features, batch_out_features = self._batch_features(batch)
+
+#         # Stack features
+#         for key in batch_in_features.keys():
+#             assert self._can_stack_features(batch_in_features[key]), (
+#                 f"features {key} are of different sizes in batch"
+#             )
+#             batch_in_features[key] = torch.stack(
+#                 [torch.as_tensor(v) for v in batch_in_features[key]]
+#             )
+
+#         for key in batch_out_features.keys():
+#             assert self._can_stack_features(batch_out_features[key]), (
+#                 f"features {key} are of different sizes in batch"
+#             )
+#             batch_out_features[key] = torch.stack(
+#                 [torch.as_tensor(v) for v in batch_out_features[key]]
+#             )
+
+#         return batch_in_features, batch_out_features
+
 
 # # -----------------------------------------------------------------------------------------------------
 # class HeterogeneousPlaidDataLoader(DataLoader):

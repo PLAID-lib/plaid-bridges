@@ -7,9 +7,9 @@ from plaid_bridges.dataloaders.generic import (
     HomogeneousCollater
 )
 
-# from plaid_bridges.dataloaders.torch import (
-#     TorchTensorDataLoader,
-# )
+from plaid_bridges.dataloaders.torch import (
+    structured_grid_with_scalars_loader,
+)
 
 
 __all__ = [
@@ -17,5 +17,5 @@ __all__ = [
     "PlaidDataLoader",
     "HeterogeneousCollater",
     "HomogeneousCollater",
-    # "TorchTensorDataLoader",
+    "structured_grid_with_scalars_loader",
 ]
