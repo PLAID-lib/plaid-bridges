@@ -199,7 +199,7 @@ class GridFieldsAndScalarsTransformer:
             treated_feature = feature.reshape(self.dims)
         else:
             raise Exception(
-                f"feature type {_type} not compatible with `GridFieldsAndScalarsCollater`"
+                f"feature type {_type} not compatible with `GridFieldsAndScalarsTransformer`"
             )
 
         return torch.tensor(treated_feature, dtype=torch.float32)
@@ -248,3 +248,26 @@ class GridFieldsAndScalarsTransformer:
             inv_out.append(sample_out)
 
         return inv_in, inv_out
+
+    def inverse_transform_batch(self, batch_out):
+
+        """Set prediction from FNO to dataset."""
+        features_out = []
+
+        for i, batched_sample in enumerate(batch_out):
+
+            features_out.append([])
+
+            for j, out_feat in enumerate(self.out_feature_identifiers):
+                _type = out_feat["type"]
+
+                if _type == "scalar":
+                    features_out[i].append(np.mean(batched_sample[j].flatten()).detach().cpu().numpy())
+                elif _type == "field":
+                    features_out[i].append(batched_sample[j].flatten().detach().cpu().numpy())
+                else:
+                    raise Exception(
+                        f"feature type {_type} not compatible with `GridFieldsAndScalarsTransformer`"
+                    )
+
+        return features_out
