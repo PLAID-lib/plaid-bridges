@@ -1,8 +1,9 @@
 """Module that implements data loaders."""
 
 from plaid_bridges.dataloaders.generic import (
-    PlaidDataLoader,
-    PlaidSampleDataLoader,
+    PlaidRawDataLoader,
+    HeterogeneousPlaidDataLoader,
+    HomogeneousPlaidDataLoader,
 )
 
 # from plaid_bridges.dataloaders.torch import (
@@ -11,7 +12,8 @@ from plaid_bridges.dataloaders.generic import (
 
 
 __all__ = [
-    "PlaidSampleDataLoader",
-    "PlaidDataLoader",
+    "PlaidRawDataLoader",
+    "HeterogeneousPlaidDataLoader",
+    "HomogeneousPlaidDataLoader",
     # "TorchTensorDataLoader",
 ]
