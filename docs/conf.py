@@ -17,6 +17,7 @@
 
 import datetime
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -213,6 +214,34 @@ github_url = "https://github.com/PLAID-lib/plaid-bridges"
 # As these files are not meant to be built, they are automatically
 # excluded from source files.
 # html_extra_path = ['_extra']
+
+
+# -----------------------------------------------------------------------------#
+
+
+
+def copy_notebooks(app, config):
+    src_dir = Path(__file__).parent.parent / "notebooks"   # adjust path
+    dst_dir = Path(__file__).parent / "source" / "notebooks"
+    dst_dir.mkdir(parents=True, exist_ok=True)
+
+    for nb in src_dir.glob("*.ipynb"):
+        shutil.copy(nb, dst_dir / nb.name)
+
+def setup(app):
+    app.connect("config-inited", copy_notebooks)
+
+# def copy_notebooks_before_build(app):
+#     src = os.path.abspath("../notebooks")
+#     dst = os.path.join(app.outdir, "notebooks")
+#     os.makedirs(dst, exist_ok=True)
+#     for fname in os.listdir(src):
+#         print(">>>", os.path.join(src, fname), dst)
+#         shutil.copy(os.path.join(src, fname), dst)
+
+# def setup(app):
+#     # run before writing output
+#     app.connect("builder-inited", copy_notebooks_before_build)
 
 
 # -----------------------------------------------------------------------------#

@@ -4,13 +4,16 @@ channels:
   - nodefaults
 dependencies:
   - python=3.11
-  - plaid=0.1.7
-##### RUN #####
+##### DEV #####
+  - muscat=2.5.0
   - pip
   - pip:
+##### RUN #####
     - torch
     - torch-geometric
+    - git+https://github.com/PLAID-lib/plaid.git@b6d67d18cd25f9434165bd4c289cece78db24ca9
 ##### DEV #####
+    - git+https://github.com/PLAID-lib/plaid-ops.git@f5184ab356fe2e65f53c105f8ab59551d4a1dc8e
 #---# testing
     - pytest
     - pytest-cov

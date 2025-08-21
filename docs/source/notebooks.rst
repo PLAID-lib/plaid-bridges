@@ -13,4 +13,5 @@ You can find here detailed examples for different part of plaid-bridges, nicely 
    :glob:
    :maxdepth: 1
 
-   notebooks/dataloaders
+   notebooks/common
+   notebooks/torch
