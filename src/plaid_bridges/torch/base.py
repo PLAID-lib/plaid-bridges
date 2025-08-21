@@ -38,3 +38,8 @@ class HomogeneousDataset(BaseRegressionDataset):
             self.out_features[i] = torch.stack(
                 [torch.as_tensor(feat) for feat in self.out_features[i]]
             )
+
+    @staticmethod
+    def inverse_transform_single_feature(feat_id, predicted_feature):
+        """inverse_transform single feature."""
+        return predicted_feature
