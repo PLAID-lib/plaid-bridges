@@ -5,7 +5,7 @@ from plaid.containers.sample import Sample
 from plaid.types import FeatureIdentifier, FeatureType
 import torch
 from plaid_bridges.common.base import BaseRegressionDataset
-
+import numpy as np
 
 
 class HomogeneousDataset(BaseRegressionDataset):
@@ -23,21 +23,12 @@ class HomogeneousDataset(BaseRegressionDataset):
             out_feature_identifiers,
             online_transform)
 
-        for i, _ in enumerate(self.in_feature_identifiers):
-            assert self._can_stack_features(self.in_features[i]), (
-                f"features {self.in_feature_identifiers[i]} are of different sizes in batch"
-            )
-            self.in_features[i] = torch.stack(
-                [torch.as_tensor(feat) for feat in self.in_features[i]]
-            )
 
-        for i, _ in enumerate(self.out_feature_identifiers):
-            assert self._can_stack_features(self.out_features[i]), (
-                f"features {self.out_feature_identifiers[i]} are of different sizes in batch"
-            )
-            self.out_features[i] = torch.stack(
-                [torch.as_tensor(feat) for feat in self.out_features[i]]
-            )
+        assert len(set([feat_id['type'] for feat_id in self.in_feature_identifiers])), "input features not of same type"
+        assert len(set([feat_id['type'] for feat_id in self.out_feature_identifiers])), "input features not of same type"
+
+        self.in_features = np.stack([np.stack([feat for feat in sample_features]) for sample_features in self.in_features])
+        self.out_features = np.stack([np.stack([feat for feat in sample_features]) for sample_features in self.out_features])
 
     @staticmethod
     def inverse_transform_single_feature(feat_id, predicted_feature):

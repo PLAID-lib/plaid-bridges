@@ -18,20 +18,15 @@ class BaseRegressionDataset:
         self.out_feature_identifiers = out_feature_identifiers
         self.online_transform = online_transform
 
-        self.in_features = [[] for _ in self.in_feature_identifiers]
-        self.out_features = [[] for _ in self.out_feature_identifiers]
+        self.in_features = [[] for _ in dataset]
+        self.out_features = [[] for _ in dataset]
 
-        for sample in dataset:
-            for j, feat_id in enumerate(self.in_feature_identifiers):
-                self.in_features[j].append(sample.get_feature_from_identifier(feat_id))
-            for j, feat_id in enumerate(self.out_feature_identifiers):
-                self.out_features[j].append(sample.get_feature_from_identifier(feat_id))
+        for i, sample in enumerate(dataset):
+            for _, feat_id in enumerate(self.in_feature_identifiers):
+                self.in_features[i].append(sample.get_feature_from_identifier(feat_id))
+            for _, feat_id in enumerate(self.out_feature_identifiers):
+                self.out_features[i].append(sample.get_feature_from_identifier(feat_id))
 
-    @staticmethod
-    def _can_stack_features(features: list[FeatureType]):
-        """Check if the feature for all sample have same size."""
-        shapes = [() if np.isscalar(obj) else np.shape(obj) for obj in features]
-        return len(set(shapes)) == 1
 
     def __len__(self) -> int:
         return len(self.dataset)
@@ -56,8 +51,16 @@ class BaseRegressionDataset:
 
         for i, id in enumerate(self.dataset.get_sample_ids()):
             for j, feat_id in enumerate(self.out_feature_identifiers):
-                pred_features_dict[id].append(self.inverse_transform_single_feature(feat_id, predictions[i,j]))
+                pred_features_dict[id].append(self.inverse_transform_single_feature(feat_id, predictions[i][j]))
 
         return self.dataset.update_features_from_identifier(
             self.out_feature_identifiers, pred_features_dict
         )
+
+    def __str__(self):
+        return f"RegressionDataset ({len(self)} sample, {len(self.in_feature_identifiers)} input features, {len(self.out_feature_identifiers)}) output features)"
+
+    def show_details(self):
+        print(self)
+        print("Input features : "+str([f"{feat['name']} ({feat['type']})" for feat in self.in_feature_identifiers]))
+        print("Output features: "+str([f"{feat['name']} ({feat['type']})" for feat in self.out_feature_identifiers]))
