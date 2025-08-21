@@ -27,7 +27,9 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
 
         self.dims = tuple(dimensions)
 
-        self.in_features = self._create_tensor(self.in_features, self.in_feature_identifiers)
+        self.in_features = self._create_tensor(
+            self.in_features, self.in_feature_identifiers
+        )
         self.out_features = self._create_tensor(
             self.out_features, self.out_feature_identifiers
         )
@@ -44,14 +46,12 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
             )  # pragma: no cover
         return torch.tensor(treated_feature)
 
-
     def _create_tensor(self, features, feature_identifiers):
         tensor = torch.empty((len(features), len(feature_identifiers), *self.dims))
         for i, feature in enumerate(features):
             for j, feat_id in enumerate(feature_identifiers):
                 tensor[i, j, ...] = self._transform_sample(feature[j], feat_id)
         return tensor
-
 
     @staticmethod
     def inverse_transform_single_feature(feat_id, predicted_feature):
