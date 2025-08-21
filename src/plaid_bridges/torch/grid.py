@@ -1,0 +1,65 @@
+"""Class implementing PyTorch loaders."""
+
+from typing import List, Optional, Sequence, Callable
+
+import numpy as np
+import torch
+from plaid.containers.dataset import Dataset
+from plaid.types import FeatureIdentifier
+from plaid_bridges.torch.base import BaseRegressionDataset
+
+
+class GridFieldsAndScalarsDataset(BaseRegressionDataset):
+    def __init__(
+        self,
+        dataset:Dataset,
+        dimensions: Sequence[int],
+        in_feature_identifiers: List[FeatureIdentifier],
+        out_feature_identifiers: List[FeatureIdentifier],
+        online_transform: Optional[Callable] = None,
+    ):
+        super().__init__(
+            dataset,
+            in_feature_identifiers,
+            out_feature_identifiers,
+            online_transform)
+
+        dims = tuple(dimensions)
+
+        @staticmethod
+        def _transform_sample(feature, feature_ids):
+            _type = feature_ids["type"]
+            if _type == "scalar":
+                treated_feature = feature
+            elif _type == "field":
+                treated_feature = feature.reshape(dims)
+            else:
+                raise Exception(
+                    f"feature type {_type} not compatible with `GridFieldsAndScalarsTransformer`"
+                )
+            return torch.tensor(treated_feature)
+
+        @staticmethod
+        def _create_tensor(features, feature_identifiers):
+            tensor = torch.empty((len(features), len(feature_identifiers), *dims))
+            for i, feature in enumerate(features):
+                for j, feat_id in enumerate(feature_identifiers):
+                    tensor[i, j, ...] = _transform_sample(feature, feat_id)
+            return tensor
+
+        self.in_tensor = _create_tensor(self.in_features, self.in_feature_identifiers)
+        self.out_tensor = _create_tensor(self.out_features, self.out_feature_identifiers)
+
+
+    @staticmethod
+    def inverse_transform_single_feature(feat_id, predicted_feature):
+        """inverse_transform single feature."""
+        _type = feat_id["type"]
+        if _type == "scalar":
+           return np.mean(np.mean(predicted_feature.flatten()))
+        elif _type == "field":
+           return np.mean(predicted_feature.flatten())
+        else:
+            raise Exception(
+                f"feature type {_type} not compatible with `prediction_to_structured_grid`"
+            )
