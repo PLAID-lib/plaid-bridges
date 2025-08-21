@@ -16,7 +16,7 @@ class HomogeneousDataset(BaseRegressionDataset):
         in_feature_identifiers: List[FeatureIdentifier],
         out_feature_identifiers: List[FeatureIdentifier],
         online_transform: Optional[Callable] = None,
-    )
+    ):
         super().__init__(
             dataset,
             in_feature_identifiers,

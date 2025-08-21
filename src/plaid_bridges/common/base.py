@@ -42,16 +42,21 @@ class BaseRegressionDataset:
         else:
             return self.in_features[index], self.out_features[index]
 
+
+    @staticmethod
+    def inverse_transform_single_feature(feat_id, predicted_feature):
+        """inverse_transform single feature."""
+        raise NotImplementedError("inverse_transform_single_feature not implemented in base class.")
+
     def inverse_transform(self, predictions):
         """inverse_transform."""
 
         assert len(predictions) == len(self.dataset)
-
         pred_features_dict = {id: [] for id in self.dataset.get_sample_ids()}
 
         for i, id in enumerate(self.dataset.get_sample_ids()):
-            for j, _ in enumerate(self.out_feature_identifiers):
-                pred_features_dict[id].append(np.mean(predictions[i,j]))
+            for j, feat_id in enumerate(self.out_feature_identifiers):
+                pred_features_dict[id].append(self.inverse_transform_single_feature(feat_id, predictions[i,j]))
 
         return self.dataset.update_features_from_identifier(
             self.out_feature_identifiers, pred_features_dict
