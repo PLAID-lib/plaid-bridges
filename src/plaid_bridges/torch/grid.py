@@ -37,7 +37,7 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
             else:
                 raise Exception(
                     f"feature type {_type} not compatible with `GridFieldsAndScalarsTransformer`"
-                )
+                )  # pragma: no cover
             return torch.tensor(treated_feature)
 
         @staticmethod
@@ -64,4 +64,4 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
         else:
             raise Exception(
                 f"feature type {_type} not compatible with `prediction_to_structured_grid`"
-            )
+            )  # pragma: no cover

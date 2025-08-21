@@ -63,7 +63,7 @@ class BaseRegressionDataset:
 
         return self.dataset.update_features_from_identifier(
             self.out_feature_identifiers, pred_features_dict
-        )
+        )  # pragma: no cover
 
     def __str__(self):
         """Function to return synthetic description of the BaseRegressionDataset."""
