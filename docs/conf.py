@@ -160,6 +160,9 @@ autoapi_python_class_content = "both"  # default is 'class'
 #     #     - Functions
 #     #     - Methods
 
+nb_execution_mode = 'auto'
+nb_execution_timeout = 300
+
 numfig = True
 
 # -----------------------------------------------------------------------------#
