@@ -1,6 +1,6 @@
 import numpy as np
 
-from plaid_bridges.torch.base import HomogeneousDataset
+from plaid_bridges.common import HomogeneousDataset
 
 
 class Test_Base_Torch:

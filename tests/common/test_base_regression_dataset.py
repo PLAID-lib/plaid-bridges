@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from plaid_bridges.common.base import BaseRegressionDataset
+from plaid_bridges.common import BaseRegressionDataset
 
 
 class Test_Base_Common:
