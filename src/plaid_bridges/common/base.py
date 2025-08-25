@@ -1,19 +1,19 @@
 """File implementing aseRegressionDataset."""
 
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 from plaid.containers.dataset import Dataset
-from plaid.types import FeatureIdentifier
+from plaid.types import FeatureIdentifier, FeatureType
 
 
 class BaseRegressionDataset:
-    """BaseRegressionDataset."""
+    """BaseRegressionDataset that provides minimal accessors and transforms mechanics."""
 
     def __init__(
         self,
         dataset: Dataset,
-        in_feature_identifiers: List[FeatureIdentifier],
-        out_feature_identifiers: List[FeatureIdentifier],
+        in_feature_identifiers: list[FeatureIdentifier],
+        out_feature_identifiers: list[FeatureIdentifier],
         online_transform: Optional[Callable] = None,
     ):
         self.dataset = dataset
@@ -21,8 +21,8 @@ class BaseRegressionDataset:
         self.out_feature_identifiers = out_feature_identifiers
         self.online_transform = online_transform
 
-        self.in_features = [[] for _ in dataset]
-        self.out_features = [[] for _ in dataset]
+        self.in_features: list[list[FeatureType]] = [[] for _ in dataset]
+        self.out_features: list[list[FeatureType]] = [[] for _ in dataset]
 
         for i, sample in enumerate(dataset):
             for _, feat_id in enumerate(self.in_feature_identifiers):
@@ -33,6 +33,10 @@ class BaseRegressionDataset:
     def __len__(self) -> int:
         """Returns length of BaseRegressionDataset."""
         return len(self.dataset)
+
+    def __str__(self):
+        """Function to return synthetic description of the BaseRegressionDataset."""
+        return f"RegressionDataset ({len(self)} sample, {len(self.in_feature_identifiers)} input features, {len(self.out_feature_identifiers)}) output features)"
 
     def __getitem__(self, index):
         """Retrieves indexed element of BaseRegressionDataset."""
@@ -64,10 +68,6 @@ class BaseRegressionDataset:
         return self.dataset.update_features_from_identifier(
             self.out_feature_identifiers, pred_features_dict
         )  # pragma: no cover
-
-    def __str__(self):
-        """Function to return synthetic description of the BaseRegressionDataset."""
-        return f"RegressionDataset ({len(self)} sample, {len(self.in_feature_identifiers)} input features, {len(self.out_feature_identifiers)}) output features)"
 
     def show_details(self):
         """Function to return details on the BaseRegressionDataset."""

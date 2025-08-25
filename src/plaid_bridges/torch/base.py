@@ -1,6 +1,6 @@
 """File implementing base TorchRegressionDatasets."""
 
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 import numpy as np
 from plaid.containers.dataset import Dataset
@@ -15,8 +15,8 @@ class HomogeneousDataset(BaseRegressionDataset):
     def __init__(
         self,
         dataset: Dataset,
-        in_feature_identifiers: List[FeatureIdentifier],
-        out_feature_identifiers: List[FeatureIdentifier],
+        in_feature_identifiers: list[FeatureIdentifier],
+        out_feature_identifiers: list[FeatureIdentifier],
         online_transform: Optional[Callable] = None,
     ):
         super().__init__(

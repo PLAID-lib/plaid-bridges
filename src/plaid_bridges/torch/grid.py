@@ -1,6 +1,6 @@
 """File implementing Grid-like TorchRegressionDatasets."""
 
-from typing import Callable, List, Optional, Sequence
+from typing import Callable, Optional, Sequence
 
 import numpy as np
 import torch
@@ -17,8 +17,8 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
         self,
         dataset: Dataset,
         dimensions: Sequence[int],
-        in_feature_identifiers: List[FeatureIdentifier],
-        out_feature_identifiers: List[FeatureIdentifier],
+        in_feature_identifiers: list[FeatureIdentifier],
+        out_feature_identifiers: list[FeatureIdentifier],
         online_transform: Optional[Callable] = None,
     ):
         super().__init__(
