@@ -17,6 +17,7 @@
 
 import datetime
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -29,6 +30,7 @@ sys.path.insert(0, str(basedir))
 sys.path.insert(0, str(basedir / "src" / "plaid_bridges"))
 # sys.path.insert(0, basedir / "tests")
 sys.path.insert(0, str(basedir / "examples"))
+sys.path.insert(0, str(basedir / "notebooks"))
 print(sys.path)
 
 
@@ -158,6 +160,9 @@ autoapi_python_class_content = "both"  # default is 'class'
 #     #     - Functions
 #     #     - Methods
 
+nb_execution_mode = 'auto'
+nb_execution_timeout = 300
+
 numfig = True
 
 # -----------------------------------------------------------------------------#
@@ -212,6 +217,20 @@ github_url = "https://github.com/PLAID-lib/plaid-bridges"
 # As these files are not meant to be built, they are automatically
 # excluded from source files.
 # html_extra_path = ['_extra']
+
+
+# -----------------------------------------------------------------------------#
+
+def copy_notebooks(app, config):
+    src_dir = Path(__file__).parent.parent / "notebooks"   # adjust path
+    dst_dir = Path(__file__).parent / "source" / "notebooks"
+    dst_dir.mkdir(parents=True, exist_ok=True)
+
+    for nb in src_dir.glob("*.ipynb"):
+        shutil.copy(nb, dst_dir / nb.name)
+
+def setup(app):
+    app.connect("config-inited", copy_notebooks)
 
 
 # -----------------------------------------------------------------------------#
