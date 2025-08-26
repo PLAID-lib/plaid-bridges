@@ -28,14 +28,7 @@ The code is hosted on `GitHub <https://github.com/PLAID-lib/plaid-bridges>`_
    :maxdepth: 1
    :caption: Getting Started
 
-   source/getting_started.md
-
-.. toctree::
-   :glob:
-   :maxdepth: 1
-   :caption: Advanced
-
-   source/contributing.md
+   source/quickstart.md
 
 .. toctree::
    :glob:
@@ -43,6 +36,14 @@ The code is hosted on `GitHub <https://github.com/PLAID-lib/plaid-bridges>`_
    :caption: API Documentation
 
    Autoapi <autoapi/plaid_bridges/index>
+   Examples & Tutorials <source/notebooks.rst>
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :caption: Contributing
+
+   source/contributing.md
 
 
 Indices and tables
