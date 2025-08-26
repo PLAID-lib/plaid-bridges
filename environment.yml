@@ -13,7 +13,7 @@ dependencies:
     - torch-geometric
     - git+https://github.com/PLAID-lib/plaid.git@815b8623f2414b0a1f231486a61f13d634c1b7e7
 ##### DEV #####
-    - git+https://github.com/PLAID-lib/plaid-ops.git@815b8623f2414b0a1f231486a61f13d634c1b7e7
+    - git+https://github.com/PLAID-lib/plaid-ops.git@f5184ab356fe2e65f53c105f8ab59551d4a1dc8e
 #---# testing
     - pytest
     - pytest-cov
@@ -30,3 +30,4 @@ dependencies:
     - nbconvert
 
     - furo
+
