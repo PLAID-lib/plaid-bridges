@@ -5,7 +5,7 @@ from typing import Optional, Sequence
 import numpy as np
 import torch
 from plaid.containers.dataset import Dataset
-from plaid.types import FeatureIdentifier, FeatureType, ScalarType
+from plaid.types import Feature, FeatureIdentifier, Scalar
 
 from plaid_bridges.common import (
     BaseRegressionDataset,
@@ -20,6 +20,7 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
         dataset (Dataset): PLAID dataset.
         in_feature_identifiers (list[FeatureIdentifier]): List of input feature identifiers.
         out_feature_identifiers (list[FeatureIdentifier]): List of output feature identifiers.
+        train (bool, optional): if True, out_features are initialized for the later regressor fit.
         online_transform (featuture_transform, optional): Transformation applied to the samples through the `__getitem__` function.
     """
 
@@ -27,8 +28,8 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
         self,
         dataset: Dataset,
         dimensions: Sequence[int],
-        in_feature_identifiers: list[FeatureIdentifier],
-        out_feature_identifiers: list[FeatureIdentifier],
+        in_features_identifiers: list[FeatureIdentifier],
+        out_features_identifiers: list[FeatureIdentifier],
         train: Optional[bool] = True,
         online_transform: Optional[feature_transform] = None,
     ):
@@ -43,17 +44,17 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
         self.dims = tuple(dimensions)
 
         self.in_features = self._create_tensor(  # pyright: ignore[reportAttributeAccessIssue]  # overwritting self.in_features
-            self.in_features, self.in_feature_identifiers
+            self.in_features, self.in_features_identifiers
         )
         if train:
             self.out_features = self._create_tensor(  # pyright: ignore[reportAttributeAccessIssue]  # overwritting self.in_features
-                self.out_features, self.out_feature_identifiers
+                self.out_features, self.out_features_identifiers
             )
 
-    def _transform_sample(self, feature: FeatureType, feature_ids: FeatureIdentifier):
+    def _transform_sample(self, feature: Feature, feature_ids: FeatureIdentifier):
         if feature is not None:
             _type = feature_ids["type"]
-            if _type == "scalar" and isinstance(feature, ScalarType):
+            if _type == "scalar" and isinstance(feature, Scalar):
                 treated_feature = feature
             elif _type == "field" and isinstance(feature, np.ndarray):
                 treated_feature = feature.reshape(self.dims)
@@ -67,7 +68,7 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
 
     def _create_tensor(
         self,
-        features: list[list[FeatureType]],
+        features: list[list[Feature]],
         feature_identifiers: list[FeatureIdentifier],
     ) -> torch.Tensor:
         tensor = torch.empty((len(features), len(feature_identifiers), *self.dims))
@@ -78,11 +79,11 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
 
     @staticmethod
     def inverse_transform_single_feature(
-        feat_id: FeatureIdentifier, predicted_feature: FeatureType
-    ) -> FeatureType:
+        feat_id: FeatureIdentifier, predicted_feature: Feature
+    ) -> Feature:
         """inverse_transform single feature."""
         _type = feat_id["type"]
-        if _type == "scalar" and isinstance(predicted_feature, ScalarType):
+        if _type == "scalar" and isinstance(predicted_feature, np.ndarray):
             return np.mean(predicted_feature)
         elif _type == "field" and isinstance(predicted_feature, np.ndarray):
             return predicted_feature.flatten()

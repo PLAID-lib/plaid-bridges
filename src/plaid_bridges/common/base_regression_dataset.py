@@ -3,10 +3,10 @@
 from typing import Callable, Optional, TypeAlias
 
 from plaid.containers.dataset import Dataset
-from plaid.types import FeatureIdentifier, FeatureType
+from plaid.types import Feature, FeatureIdentifier
 
 feature_transform: TypeAlias = Callable[
-    [list[FeatureType], list[FeatureType]], tuple[list[FeatureType], list[FeatureType]]
+    [list[Feature], list[Feature]], tuple[list[Feature], list[Feature]]
 ]
 
 
@@ -17,14 +17,15 @@ class BaseRegressionDataset:
         dataset (Dataset): PLAID dataset.
         in_feature_identifiers (list[FeatureIdentifier]): List of input feature identifiers.
         out_feature_identifiers (list[FeatureIdentifier]): List of output feature identifiers.
+        train (bool, optional): if True, out_features are initialized for the later regressor fit.
         online_transform (featuture_transform, optional): Transformation applied to the samples through the `__getitem__` function.
     """
 
     def __init__(
         self,
         dataset: Dataset,
-        in_feature_identifiers: list[FeatureIdentifier],
-        out_feature_identifiers: list[FeatureIdentifier],
+        in_features_identifiers: list[FeatureIdentifier],
+        out_features_identifiers: list[FeatureIdentifier],
         train: Optional[bool] = True,
         online_transform: Optional[feature_transform] = None,
     ):
@@ -34,9 +35,9 @@ class BaseRegressionDataset:
         self.train = train
         self.online_transform = online_transform
 
-        self.in_features: list[list[FeatureType]] = [[] for _ in dataset]
+        self.in_features: list[list[Feature]] = [[] for _ in dataset]
         if train:
-            self.out_features: list[list[FeatureType]] = [[] for _ in dataset]
+            self.out_features: list[list[Feature]] = [[] for _ in dataset]
 
         for i, sample in enumerate(dataset):
             for _, feat_id in enumerate(self.in_features_identifiers):
@@ -53,9 +54,9 @@ class BaseRegressionDataset:
 
     def __str__(self) -> str:
         """Function to return synthetic description of the BaseRegressionDataset."""
-        return f"RegressionDataset ({len(self)} sample, {len(self.in_feature_identifiers)} input features, {len(self.out_feature_identifiers)}) output features)"
+        return f"RegressionDataset ({len(self)} sample, {len(self.in_features_identifiers)} input features, {len(self.out_features_identifiers)}) output features)"
 
-    def __getitem__(self, index: int) -> tuple[list[FeatureType], list[FeatureType]]:
+    def __getitem__(self, index: int) -> tuple[list[Feature], list[Feature]]:
         """Retrieve an element from the dataset.
 
         Applies `online_transform` if defined. Returns a tuple `(input, target)` during training,
@@ -77,8 +78,8 @@ class BaseRegressionDataset:
 
     @staticmethod
     def inverse_transform_single_feature(
-        feat_id: FeatureIdentifier, predicted_feature: FeatureType
-    ) -> FeatureType:
+        feat_id: FeatureIdentifier, predicted_feature: Feature
+    ) -> Feature:
         """Inverse_transform a single feature."""
         raise NotImplementedError(
             "inverse_transform_single_feature not implemented in base class."
@@ -87,7 +88,7 @@ class BaseRegressionDataset:
     def inverse_transform(self, predictions) -> Dataset:
         """Inverse_transform multiple features and returns them into a PLAID Dataset."""
         assert len(predictions) == len(self.dataset)
-        pred_features_dict: dict[int, list[FeatureType]] = {
+        pred_features_dict: dict[int, list[Feature]] = {
             id: [] for id in self.dataset.get_sample_ids()
         }
 
