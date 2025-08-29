@@ -5,7 +5,7 @@ from typing import Optional, Sequence
 import numpy as np
 import torch
 from plaid.containers.dataset import Dataset
-from plaid.types import Feature, FeatureIdentifier, Scalar
+from plaid.types import Feature, FeatureIdentifier
 
 from plaid_bridges.common import (
     BaseRegressionDataset,
@@ -54,9 +54,11 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
     def _transform_sample(self, feature: Feature, feature_ids: FeatureIdentifier):
         if feature is not None:
             _type = feature_ids["type"]
-            if _type == "scalar" and isinstance(feature, Scalar):
+            if (
+                _type == "scalar"
+            ):  # and isinstance(feature, Scalar): # `isinstance` not adapted to complex type aliases
                 treated_feature = feature
-            elif _type == "field" and isinstance(feature, np.ndarray):
+            elif _type == "field":  # and isinstance(feature, np.ndarray):
                 treated_feature = feature.reshape(self.dims)
             else:
                 raise Exception(
