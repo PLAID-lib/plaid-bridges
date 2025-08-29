@@ -29,10 +29,15 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
         dimensions: Sequence[int],
         in_feature_identifiers: list[FeatureIdentifier],
         out_feature_identifiers: list[FeatureIdentifier],
+        train: Optional[bool] = True,
         online_transform: Optional[feature_transform] = None,
     ):
         super().__init__(
-            dataset, in_feature_identifiers, out_feature_identifiers, online_transform
+            dataset,
+            in_features_identifiers,
+            out_features_identifiers,
+            train,
+            online_transform,
         )
 
         self.dims = tuple(dimensions)
@@ -40,21 +45,25 @@ class GridFieldsAndScalarsDataset(BaseRegressionDataset):
         self.in_features = self._create_tensor(  # pyright: ignore[reportAttributeAccessIssue]  # overwritting self.in_features
             self.in_features, self.in_feature_identifiers
         )
-        self.out_features = self._create_tensor(  # pyright: ignore[reportAttributeAccessIssue]  # overwritting self.in_features
-            self.out_features, self.out_feature_identifiers
-        )
+        if train:
+            self.out_features = self._create_tensor(  # pyright: ignore[reportAttributeAccessIssue]  # overwritting self.in_features
+                self.out_features, self.out_feature_identifiers
+            )
 
     def _transform_sample(self, feature: FeatureType, feature_ids: FeatureIdentifier):
-        _type = feature_ids["type"]
-        if _type == "scalar" and isinstance(feature, ScalarType):
-            treated_feature = feature
-        elif _type == "field" and isinstance(feature, np.ndarray):
-            treated_feature = feature.reshape(self.dims)
+        if feature is not None:
+            _type = feature_ids["type"]
+            if _type == "scalar" and isinstance(feature, ScalarType):
+                treated_feature = feature
+            elif _type == "field" and isinstance(feature, np.ndarray):
+                treated_feature = feature.reshape(self.dims)
+            else:
+                raise Exception(
+                    f"feature type {_type} not compatible with `GridFieldsAndScalarsTransformer`"
+                )  # pragma: no cover
+            return torch.tensor(treated_feature)
         else:
-            raise Exception(
-                f"feature type {_type} not compatible with `GridFieldsAndScalarsTransformer`"
-            )  # pragma: no cover
-        return torch.tensor(treated_feature)
+            return 0.0
 
     def _create_tensor(
         self,

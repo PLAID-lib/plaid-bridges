@@ -88,6 +88,6 @@ def field_features(dataset: Dataset) -> List:
 
 @pytest.fixture()
 def in_out_features(scalar_features: List, field_features: List) -> Tuple:
-    in_feature_identifiers = [scalar_features[0], field_features[0]]
-    out_feature_identifiers = [field_features[1], scalar_features[1]]
-    return (in_feature_identifiers, out_feature_identifiers)
+    in_features_identifiers = [scalar_features[0], field_features[0]]
+    out_features_identifiers = [field_features[1], scalar_features[1]]
+    return (in_features_identifiers, out_features_identifiers)

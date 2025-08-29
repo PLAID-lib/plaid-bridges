@@ -8,8 +8,8 @@ class Test_Base_Common:
     def test_BaseRegressionDataset(self, dataset, in_out_features):
         reg_dataset = BaseRegressionDataset(
             dataset=dataset,
-            in_feature_identifiers=in_out_features[0],
-            out_feature_identifiers=in_out_features[1],
+            in_features_identifiers=in_out_features[0],
+            out_features_identifiers=in_out_features[1],
         )
 
         reg_dataset.show_details()
@@ -31,11 +31,20 @@ class Test_Base_Common:
 
         reg_dataset = BaseRegressionDataset(
             dataset=dataset,
-            in_feature_identifiers=in_out_features[0],
-            out_feature_identifiers=in_out_features[1],
-            online_transform=lambda x, y: (x, y),
+            in_features_identifiers=in_out_features[0],
+            out_features_identifiers=in_out_features[1],
+            train=True,
+            online_transform=lambda x: x,
         )
         reg_dataset[0]
+
+        reg_dataset = BaseRegressionDataset(
+            dataset=dataset,
+            in_features_identifiers=in_out_features[0],
+            out_features_identifiers=in_out_features[1],
+            train=False,
+            online_transform=lambda x: x,
+        )
 
         with pytest.raises(NotImplementedError):
             prediction = [reg_dataset[0][1], reg_dataset[1][1]]

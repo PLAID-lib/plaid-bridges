@@ -25,21 +25,27 @@ class BaseRegressionDataset:
         dataset: Dataset,
         in_feature_identifiers: list[FeatureIdentifier],
         out_feature_identifiers: list[FeatureIdentifier],
+        train: Optional[bool] = True,
         online_transform: Optional[feature_transform] = None,
     ):
         self.dataset = dataset
-        self.in_feature_identifiers = in_feature_identifiers
-        self.out_feature_identifiers = out_feature_identifiers
+        self.in_features_identifiers = in_features_identifiers
+        self.out_features_identifiers = out_features_identifiers
+        self.train = train
         self.online_transform = online_transform
 
         self.in_features: list[list[FeatureType]] = [[] for _ in dataset]
-        self.out_features: list[list[FeatureType]] = [[] for _ in dataset]
+        if train:
+            self.out_features: list[list[FeatureType]] = [[] for _ in dataset]
 
         for i, sample in enumerate(dataset):
-            for _, feat_id in enumerate(self.in_feature_identifiers):
+            for _, feat_id in enumerate(self.in_features_identifiers):
                 self.in_features[i].append(sample.get_feature_from_identifier(feat_id))
-            for _, feat_id in enumerate(self.out_feature_identifiers):
-                self.out_features[i].append(sample.get_feature_from_identifier(feat_id))
+            if train:
+                for _, feat_id in enumerate(self.out_features_identifiers):
+                    self.out_features[i].append(
+                        sample.get_feature_from_identifier(feat_id)
+                    )
 
     def __len__(self) -> int:
         """Returns length of BaseRegressionDataset."""
@@ -50,13 +56,24 @@ class BaseRegressionDataset:
         return f"RegressionDataset ({len(self)} sample, {len(self.in_feature_identifiers)} input features, {len(self.out_feature_identifiers)}) output features)"
 
     def __getitem__(self, index: int) -> tuple[list[FeatureType], list[FeatureType]]:
-        """Retrieves indexed element of BaseRegressionDataset."""
+        """Retrieve an element from the dataset.
+
+        Applies `online_transform` if defined. Returns a tuple `(input, target)` during training,
+        or just `input` during evaluation.
+        """
+        # Get input features
+        in_feat = self.in_features[index]
         if self.online_transform:
-            return self.online_transform(
-                self.in_features[index], self.out_features[index]
-            )
-        else:
-            return self.in_features[index], self.out_features[index]
+            in_feat = self.online_transform(in_feat)
+
+        # Get output features if training
+        if self.train:
+            out_feat = self.out_features[index]
+            if self.online_transform:
+                out_feat = self.online_transform(out_feat)
+            return in_feat, out_feat
+
+        return in_feat
 
     @staticmethod
     def inverse_transform_single_feature(
@@ -75,13 +92,13 @@ class BaseRegressionDataset:
         }
 
         for i, id in enumerate(self.dataset.get_sample_ids()):
-            for j, feat_id in enumerate(self.out_feature_identifiers):
+            for j, feat_id in enumerate(self.out_features_identifiers):
                 pred_features_dict[id].append(
                     self.inverse_transform_single_feature(feat_id, predictions[i][j])
                 )
 
         return self.dataset.update_features_from_identifier(
-            self.out_feature_identifiers, pred_features_dict
+            self.out_features_identifiers, pred_features_dict
         )  # pragma: no cover
 
     def show_details(self):
@@ -92,7 +109,7 @@ class BaseRegressionDataset:
             + str(
                 [
                     f"{feat['name']} ({feat['type']})"
-                    for feat in self.in_feature_identifiers
+                    for feat in self.in_features_identifiers
                 ]
             )
         )
@@ -101,7 +118,7 @@ class BaseRegressionDataset:
             + str(
                 [
                     f"{feat['name']} ({feat['type']})"
-                    for feat in self.out_feature_identifiers
+                    for feat in self.out_features_identifiers
                 ]
             )
         )
