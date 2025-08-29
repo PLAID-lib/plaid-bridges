@@ -1,6 +1,11 @@
 """Implement the `BaseRegressionDataset`."""
 
-from typing import Callable, Optional, TypeAlias
+from typing import Callable, Optional
+
+try:
+    from typing import TypeAlias  # Python 3.10+
+except ImportError:  # pragma: no cover
+    from typing_extensions import TypeAlias
 
 from plaid.containers.dataset import Dataset
 from plaid.types import Feature, FeatureIdentifier
