@@ -11,9 +11,9 @@ dependencies:
 ##### RUN #####
     - torch
     - torch-geometric
-    - git+https://github.com/PLAID-lib/plaid.git@bd1eca0227c734b7c49940146c19c1234193e5b0
+    - git+https://github.com/PLAID-lib/plaid.git
 ##### DEV #####
-    - git+https://github.com/PLAID-lib/plaid-ops.git@f58571eb4a4eedbe835782d33cbf2b90d3b10c50
+    - git+https://github.com/PLAID-lib/plaid-ops.git
 #---# testing
     - pytest
     - pytest-cov
