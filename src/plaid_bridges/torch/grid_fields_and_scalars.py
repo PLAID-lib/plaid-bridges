@@ -1,6 +1,6 @@
 """File implementing Grid-like TorchRegressionDatasets."""
 
-from typing import Optional, Sequence
+from typing import Sequence
 
 import numpy as np
 import torch
@@ -11,56 +11,46 @@ from plaid_bridges.common import BaseTransformer
 
 
 class GridFieldsAndScalarsOfflineTransformer(BaseTransformer):
+    """GridFieldsAndScalarsOfflineTransformer."""
+
     def __init__(
         self,
         dimensions: Sequence[int],
-        in_features_identifiers: list[FeatureIdentifier],
-        out_features_identifiers: list[FeatureIdentifier],
+        features_identifiers: list[FeatureIdentifier],
     ):
         self.dimensions = dimensions
 
         super().__init__(
-            in_features_identifiers,
-            out_features_identifiers,
+            features_identifiers,
         )
 
     def transform_single_feature(self, feature: Feature, feature_id: FeatureIdentifier):
-        if feature is not None:
-            _type = feature_id["type"]
-            if (
-                _type == "scalar"
-            ):  # and isinstance(feature, Scalar): # `isinstance` not adapted to complex type aliases
-                treated_feature = feature
-            elif _type == "field":  # and isinstance(feature, np.ndarray):
-                treated_feature = feature.reshape(self.dimensions)
-            else:
-                raise Exception(
-                    f"feature type {_type} not compatible with `GridFieldsAndScalarsTransformer`"
-                )  # pragma: no cover
-            return torch.tensor(treated_feature)
+        """Transform_single_feature."""
+        assert feature is not None
+        _type = feature_id["type"]
+        if (
+            _type == "scalar"
+        ):  # and isinstance(feature, Scalar): # `isinstance` not adapted to complex type aliases
+            treated_feature = feature
+        elif _type == "field":  # and isinstance(feature, np.ndarray):
+            treated_feature = feature.reshape(self.dimensions)
         else:
-            return 0.0
+            raise Exception(
+                f"feature type {_type} not compatible with `GridFieldsAndScalarsTransformer`"
+            )  # pragma: no cover
+        return torch.tensor(treated_feature)
 
-    def transform(
-        self, dataset: Dataset
-    ) -> tuple[torch.Tensor, Optional[torch.Tensor]]:
-        in_tensor = torch.empty(
-            (len(dataset), len(self.in_features_identifiers), *self.dimensions)
+    def transform(self, dataset: Dataset) -> torch.Tensor:
+        """Transform."""
+        tensor = torch.empty(
+            (len(dataset), len(self.features_identifiers), *self.dimensions)
         )
         for i, sample in enumerate(dataset):
-            for j, feat_id in enumerate(self.in_features_identifiers):
+            for j, feat_id in enumerate(self.features_identifiers):
                 feature = sample.get_feature_from_identifier(feat_id)
-                in_tensor[i, j, ...] = self.transform_single_feature(feature, feat_id)
+                tensor[i, j, ...] = self.transform_single_feature(feature, feat_id)
 
-        out_tensor = torch.empty(
-            (len(dataset), len(self.out_features_identifiers), *self.dimensions)
-        )
-        for i, sample in enumerate(dataset):
-            for j, feat_id in enumerate(self.out_features_identifiers):
-                feature = sample.get_feature_from_identifier(feat_id)
-                out_tensor[i, j, ...] = self.transform_single_feature(feature, feat_id)
-
-        return in_tensor, out_tensor
+        return tensor
 
     @staticmethod
     def inverse_transform_single_feature(
@@ -77,91 +67,3 @@ class GridFieldsAndScalarsOfflineTransformer(BaseTransformer):
             raise Exception(
                 f"feature type {_type} not compatible with `prediction_to_structured_grid`"
             )  # pragma: no cover
-
-
-# from typing import Union
-# from plaid_bridges.common import (
-#     BaseRegressionDataset,
-# )
-# from plaid_bridges.common.base_regression_dataset import feature_transform
-
-# class GridFieldsAndScalarsDataset(BaseRegressionDataset):
-#     """GridFieldsAndScalarsDataset.
-
-#     Args:
-#         dataset (Dataset): PLAID dataset.
-#         in_feature_identifiers (list[FeatureIdentifier]): List of input feature identifiers.
-#         out_feature_identifiers (list[FeatureIdentifier]): List of output feature identifiers.
-#         train (bool, optional): if True, out_features are initialized for the later regressor fit.
-#         online_transform (featuture_transform, optional): Transformation applied to the samples through the `__getitem__` function.
-#     """
-
-#     def __init__(
-#         self,
-#         dataset: Dataset,
-#         dimensions: Sequence[int],
-#         in_features_identifiers: list[FeatureIdentifier],
-#         out_features_identifiers: list[FeatureIdentifier],
-#         train: Optional[bool] = True,
-#         online_transform: Optional[feature_transform] = None,
-#     ):
-#         super().__init__(
-#             dataset,
-#             in_features_identifiers,
-#             out_features_identifiers,
-#             train,
-#             online_transform,
-#         )
-
-#         self.dims = tuple(dimensions)
-
-#         self.in_features = self._create_tensor(  # pyright: ignore[reportAttributeAccessIssue]  # overwritting self.in_features
-#             self.in_features, self.in_features_identifiers
-#         )
-#         if train:
-#             self.out_features = self._create_tensor(  # pyright: ignore[reportAttributeAccessIssue]  # overwritting self.in_features
-#                 self.out_features, self.out_features_identifiers
-#             )
-
-#     def _transform_sample(self, feature: Feature, feature_ids: FeatureIdentifier):
-#         if feature is not None:
-#             _type = feature_ids["type"]
-#             if (
-#                 _type == "scalar"
-#             ):  # and isinstance(feature, Scalar): # `isinstance` not adapted to complex type aliases
-#                 treated_feature = feature
-#             elif _type == "field":  # and isinstance(feature, np.ndarray):
-#                 treated_feature = feature.reshape(self.dims)
-#             else:
-#                 raise Exception(
-#                     f"feature type {_type} not compatible with `GridFieldsAndScalarsTransformer`"
-#                 )  # pragma: no cover
-#             return torch.tensor(treated_feature)
-#         else:
-#             return 0.0
-
-#     def _create_tensor(
-#         self,
-#         features: list[list[Feature]],
-#         feature_identifiers: list[FeatureIdentifier],
-#     ) -> torch.Tensor:
-#         tensor = torch.empty((len(features), len(feature_identifiers), *self.dims))
-#         for i, feature in enumerate(features):
-#             for j, feat_id in enumerate(feature_identifiers):
-#                 tensor[i, j, ...] = self._transform_sample(feature[j], feat_id)
-#         return tensor
-
-#     @staticmethod
-#     def inverse_transform_single_feature(
-#         feat_id: FeatureIdentifier, predicted_feature: Feature
-#     ) -> Feature:
-#         """inverse_transform single feature."""
-#         _type = feat_id["type"]
-#         if _type == "scalar" and isinstance(predicted_feature, np.ndarray):
-#             return np.mean(predicted_feature)
-#         elif _type == "field" and isinstance(predicted_feature, np.ndarray):
-#             return predicted_feature.flatten()
-#         else:
-#             raise Exception(
-#                 f"feature type {_type} not compatible with `prediction_to_structured_grid`"
-#             )  # pragma: no cover

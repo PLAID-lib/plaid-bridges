@@ -6,8 +6,7 @@ from plaid_bridges.common import BaseRegressionDataset, BaseTransformer
 class Test_Base_Common:
     def test_BaseTransformer(self, in_out_features_ids, dataset):
         transformer = BaseTransformer(
-            in_features_identifiers=in_out_features_ids[0],
-            out_features_identifiers=in_out_features_ids[1],
+            features_identifiers=in_out_features_ids[0],
         )
         print(transformer)
         transformer.show_details()
@@ -19,16 +18,27 @@ class Test_Base_Common:
             transformer.inverse_transform_single_feature(dataset, 1.0)
 
     def test_BaseRegressionDataset(self, dataset, in_out_features_ids):
-        offline_transformer = BaseTransformer(
-            in_features_identifiers=in_out_features_ids[0],
-            out_features_identifiers=in_out_features_ids[1],
+        offline_in_transformer = BaseTransformer(
+            features_identifiers=in_out_features_ids[0],
         )
 
         with pytest.raises(NotImplementedError):
             BaseRegressionDataset(
                 dataset=dataset,
-                offline_transformer=offline_transformer,
+                offline_in_transformer=offline_in_transformer,
             )
+
+        offline_out_transformer = BaseTransformer(
+            features_identifiers=in_out_features_ids[1],
+        )
+
+        with pytest.raises(NotImplementedError):
+            BaseRegressionDataset(
+                dataset=dataset,
+                offline_in_transformer=offline_in_transformer,
+                offline_out_transformer=offline_out_transformer,
+            )
+
         # len(reg_dataset)
         # print(reg_dataset)
 

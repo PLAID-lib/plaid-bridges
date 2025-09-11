@@ -14,19 +14,28 @@ class Test_Torch_Grid:
             dataset, dimensions=(5, 5), bbox=bbox, verbose=True
         )
 
-        offline_transformer = GridFieldsAndScalarsOfflineTransformer(
-            in_features_identifiers=in_out_features_ids[0],
-            out_features_identifiers=in_out_features_ids[1],
+        offline_in_transformer = GridFieldsAndScalarsOfflineTransformer(
+            features_identifiers=in_out_features_ids[0],
+            dimensions=(5, 5),
+        )
+        offline_out_transformer = GridFieldsAndScalarsOfflineTransformer(
+            features_identifiers=in_out_features_ids[1],
             dimensions=(5, 5),
         )
 
         torch_dataset = BaseRegressionDataset(
             dataset=proj_dataset,
-            offline_transformer=offline_transformer,
+            offline_in_transformer=offline_in_transformer,
+        )
+
+        torch_dataset = BaseRegressionDataset(
+            dataset=proj_dataset,
+            offline_in_transformer=offline_in_transformer,
+            offline_out_transformer=offline_out_transformer,
         )
 
         prediction = [
             torch_dataset[0][1].detach().cpu(),
             torch_dataset[1][1].detach().cpu(),
         ]
-        offline_transformer.inverse_transform(proj_dataset, prediction)
+        offline_out_transformer.inverse_transform(proj_dataset, prediction)
