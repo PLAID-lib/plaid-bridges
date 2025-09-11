@@ -71,23 +71,23 @@ def dataset(sample_with_tree: Sample) -> Dataset:
 
 
 @pytest.fixture()
-def scalar_features(dataset: Dataset) -> List:
+def scalar_features_ids(dataset: Dataset) -> List:
     all_feat_ids = dataset.get_all_features_identifiers()
-    scalar_features = [f for f in all_feat_ids if "scalar" in f.values()]
-    scalar_features.sort(key=lambda f: f["name"])
-    return scalar_features
+    scalar_features_ids = [f for f in all_feat_ids if "scalar" in f.values()]
+    scalar_features_ids.sort(key=lambda f: f["name"])
+    return scalar_features_ids
 
 
 @pytest.fixture()
-def field_features(dataset: Dataset) -> List:
+def field_features_ids(dataset: Dataset) -> List:
     all_feat_ids = dataset.get_all_features_identifiers()
-    field_features = [f for f in all_feat_ids if "field" in f.values()]
-    field_features.sort(key=lambda f: f["name"])
-    return field_features
+    field_features_ids = [f for f in all_feat_ids if "field" in f.values()]
+    field_features_ids.sort(key=lambda f: f["name"])
+    return field_features_ids
 
 
 @pytest.fixture()
-def in_out_features(scalar_features: List, field_features: List) -> Tuple:
-    in_features_identifiers = [scalar_features[0], field_features[0]]
-    out_features_identifiers = [field_features[1], scalar_features[1]]
+def in_out_features_ids(scalar_features_ids: List, field_features_ids: List) -> Tuple:
+    in_features_identifiers = [scalar_features_ids[0], field_features_ids[0]]
+    out_features_identifiers = [field_features_ids[1], scalar_features_ids[1]]
     return (in_features_identifiers, out_features_identifiers)
