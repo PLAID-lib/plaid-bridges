@@ -6,10 +6,8 @@ import numpy as np
 from plaid.containers.dataset import Dataset
 from plaid.types import Feature, FeatureIdentifier
 
-from plaid_bridges.common.base_regression_dataset import (
-    # BaseRegressionDataset,
+from plaid_bridges.common.base_regression import (
     BaseTransformer,
-    # feature_transform,
 )
 
 
