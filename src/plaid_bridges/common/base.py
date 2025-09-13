@@ -12,52 +12,15 @@ ML-ready datasets. The BaseBridge handles feature transformation
 and inverse transformation for machine learning workflows.
 """
 
-from typing import Any
+from typing import Any, Generic, Type, TypeVar, Union
 
 from plaid.containers import Dataset
 from plaid.types import Feature, FeatureIdentifier
 
-
-class MLDataset:
-    """Machine Learning Dataset wrapper for handling multiple data sources.
-
-    This class wraps multiple data arrays and provides a unified interface
-    for accessing samples across all data sources by index. It's designed to
-    work with transformed features from the BaseBridge class.
-    """
-
-    all_data: tuple[Any, ...]
-
-    def __init__(self, *all_data: Any) -> None:
-        """Initialize the MLDataset with multiple data sources.
-
-        Args:
-            *all_data: Variable number of data arrays/tensors to be wrapped.
-                      All data sources must have the same length.
-        """
-        self.all_data = all_data
-
-    def __getitem__(self, index: int) -> tuple[Any, ...]:
-        """Get a sample from all data sources by index.
-
-        Args:
-            index: The index of the sample to retrieve.
-
-        Returns:
-            A tuple containing the sample data from each data source at the given index.
-        """
-        return tuple(data[index] for data in self.all_data)
-
-    def __len__(self) -> int:
-        """Get the number of samples in the dataset.
-
-        Returns:
-            The length of the dataset (based on the first data source).
-        """
-        return len(self.all_data[0])
+DatasetType = TypeVar("DatasetType")
 
 
-class BaseBridge:
+class BaseBridge(Generic[DatasetType]):
     """Base class for transforming features in a dataset for ML pipelines.
 
     This bridge handles both forward transformation of features for
@@ -66,7 +29,12 @@ class BaseBridge:
     ML-ready datasets from PLAID datasets.
     """
 
-    def transform(self, dataset: Dataset, features_ids: list[FeatureIdentifier]) -> Any:
+    def __init__(self, dataset_cls: Type[DatasetType]):
+        self.dataset_cls = dataset_cls
+
+    def transform(
+        self, dataset: Dataset, features_ids: list[FeatureIdentifier]
+    ) -> Union[Any, tuple[Any, ...]]:
         """Transform dataset features for model input.
 
         This method must be implemented by subclasses to define how
@@ -106,25 +74,23 @@ class BaseBridge:
         raise NotImplementedError("This method must be implemented by subclasses")
 
     def convert(
-        self, dataset: Dataset, features_ids_list: list[list[FeatureIdentifier]]
-    ) -> MLDataset:
+        self, dataset: Dataset, *features_ids: list[FeatureIdentifier]
+    ) -> DatasetType:
         """Convert a dataset into an ML-ready format.
 
         Transforms multiple sets of features from a dataset and wraps
-        them in an MLDataset for ML training/inference.
+        them in an ArrayDataset for ML training/inference.
 
         Args:
             dataset: The input dataset to convert.
-            features_ids_list: List of feature identifier lists to transform.
+            features_ids: List of feature identifier lists to transform.
 
         Returns:
-            An MLDataset containing the transformed features.
+            An ArrayDataset containing the transformed features.
         """
-        transf_data_list = tuple(
-            self.transform(dataset, feat_ids) for feat_ids in features_ids_list
-        )
+        transformed_data = self.transform(dataset, *features_ids)
 
-        return MLDataset(*transf_data_list)
+        return self.dataset_cls(transformed_data)
 
     def restore(
         self,

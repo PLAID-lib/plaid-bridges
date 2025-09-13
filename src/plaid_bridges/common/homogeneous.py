@@ -12,11 +12,55 @@ are of the same type. It enables efficient transformation of homogeneous
 features into NumPy arrays for machine learning workflows.
 """
 
+from typing import TYPE_CHECKING, Union
+
 import numpy as np
 from plaid.containers.dataset import Dataset
 from plaid.types import Feature, FeatureIdentifier, Scalar
 
 from plaid_bridges.common import BaseBridge
+
+if TYPE_CHECKING:
+    import torch
+
+ArrayType = Union[np.ndarray, "torch.Tensor"]
+
+
+class ArrayDataset:
+    """Machine Learning Dataset wrapper for handling multiple data sources.
+
+    This class wraps multiple data arrays and provides a unified interface
+    for accessing samples across all data sources by index. It's designed to
+    work with transformed features from the BaseBridge class.
+    """
+
+    def __init__(self, all_data: tuple[ArrayType, ...]) -> None:
+        """Initialize the ArrayDataset with multiple data sources.
+
+        Args:
+            all_data: Variable number of data arrays/tensors to be wrapped.
+                      All data sources must have the same length.
+        """
+        self.all_data = all_data
+
+    def __getitem__(self, index: int) -> tuple[ArrayType, ...]:
+        """Get a sample from all data sources by index.
+
+        Args:
+            index: The index of the sample to retrieve.
+
+        Returns:
+            A tuple containing the sample data from each data source at the given index.
+        """
+        return tuple(data[index] for data in self.all_data)
+
+    def __len__(self) -> int:
+        """Get the number of samples in the dataset.
+
+        Returns:
+            The length of the dataset (based on the first data source).
+        """
+        return len(self.all_data[0])
 
 
 class HomogeneousBridge(BaseBridge):
@@ -28,9 +72,13 @@ class HomogeneousBridge(BaseBridge):
     inverse transformation of predicted features back to their original format.
     """
 
+    def __init__(self):
+        """Initialize the HomogeneousBridge."""
+        super().__init__(ArrayDataset)
+
     def transform(
-        self, dataset: Dataset, features_ids: list[FeatureIdentifier]
-    ) -> np.ndarray:
+        self, dataset: Dataset, *features_ids: list[FeatureIdentifier]
+    ) -> tuple[np.ndarray, ...]:
         """Transform homogeneous features into a NumPy array.
 
         Converts features of the same type from a dataset into a stacked NumPy array
@@ -48,24 +96,26 @@ class HomogeneousBridge(BaseBridge):
         Raises:
             AssertionError: If the features are not all of the same type.
         """
-        assert len(set([feat_id["type"] for feat_id in features_ids])), (
-            "input features not of same type"
-        )
+        for feat_ids in features_ids:
+            assert len(set([feat_id["type"] for feat_id in feat_ids])), (
+                f"input features not of same type in {feat_ids}"
+            )
 
-        stacked_features = np.stack(
-            [
+        return tuple(
+            np.stack(
                 [
-                    feature
-                    for feature in (
-                        sample.get_feature_from_identifier(feat_id)
-                        for feat_id in features_ids
-                    )
+                    [
+                        feature
+                        for feature in (
+                            sample.get_feature_from_identifier(feat_id)
+                            for feat_id in feat_ids
+                        )
+                    ]
+                    for sample in dataset
                 ]
-                for sample in dataset
-            ]
+            )
+            for feat_ids in features_ids
         )
-
-        return stacked_features
 
     def inverse_transform(
         self,

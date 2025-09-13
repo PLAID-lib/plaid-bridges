@@ -11,5 +11,8 @@ The module exports:
 from plaid_bridges.torch.grid_fields_and_scalars import (
     GridFieldsAndScalarsBridge,
 )
+from plaid_bridges.torch.pyg import (
+    PyGBridge,
+)
 
-__all__ = ["GridFieldsAndScalarsBridge"]
+__all__ = ["GridFieldsAndScalarsBridge", "PyGBridge"]

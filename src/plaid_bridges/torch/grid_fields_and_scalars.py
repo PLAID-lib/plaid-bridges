@@ -5,7 +5,7 @@
 #
 #
 
-"""Implementation of Grid-like TorchRegressionDatasets.
+"""Implementation of GridFieldsAndScalarsBridge.
 
 This module provides a bridge for transforming grid-based features (fields) and
 scalar features into PyTorch tensors for machine learning workflows. It handles
@@ -20,7 +20,7 @@ import torch
 from plaid.containers.dataset import Dataset
 from plaid.types import Feature, FeatureIdentifier
 
-from plaid_bridges.common import BaseBridge
+from plaid_bridges.common import ArrayDataset, BaseBridge
 
 
 class GridFieldsAndScalarsBridge(BaseBridge):
@@ -46,6 +46,7 @@ class GridFieldsAndScalarsBridge(BaseBridge):
                        For example, (height, width) for 2D fields.
         """
         self.dimensions = dimensions
+        super().__init__(ArrayDataset)
 
     def transform_single_feature(
         self, feature: Feature, feature_id: FeatureIdentifier
@@ -80,8 +81,8 @@ class GridFieldsAndScalarsBridge(BaseBridge):
         return torch.tensor(treated_feature)
 
     def transform(
-        self, dataset: Dataset, features_ids: list[FeatureIdentifier]
-    ) -> torch.Tensor:
+        self, dataset: Dataset, *features_ids: list[FeatureIdentifier]
+    ) -> tuple[torch.Tensor, ...]:
         """Transform dataset features into a PyTorch tensor.
 
         Converts features from a dataset into a multi-dimensional PyTorch tensor
@@ -96,13 +97,16 @@ class GridFieldsAndScalarsBridge(BaseBridge):
             A PyTorch tensor of shape (n_samples, n_features, *dimensions)
             containing the transformed features.
         """
-        tensor = torch.empty((len(dataset), len(features_ids), *self.dimensions))
-        for i, sample in enumerate(dataset):
-            for j, feat_id in enumerate(features_ids):
-                feature = sample.get_feature_from_identifier(feat_id)
-                tensor[i, j, ...] = self.transform_single_feature(feature, feat_id)
+        tensors = []
+        for feat_ids in features_ids:
+            tensor = torch.empty((len(dataset), len(feat_ids), *self.dimensions))
+            for i, sample in enumerate(dataset):
+                for j, feat_id in enumerate(feat_ids):
+                    feature = sample.get_feature_from_identifier(feat_id)
+                    tensor[i, j, ...] = self.transform_single_feature(feature, feat_id)
+            tensors.append(tensor)
 
-        return tensor
+        return tuple(tensors)
 
     def inverse_transform(
         self,

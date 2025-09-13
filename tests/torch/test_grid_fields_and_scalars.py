@@ -13,8 +13,10 @@ class Test_Torch_Grid:
             dataset, dimensions=(5, 5), bbox=bbox, verbose=False
         )
         bridge = GridFieldsAndScalarsBridge(dimensions=(5, 5))
-        torch_dataset = bridge.convert(proj_dataset, [in_out_features_ids[0]])
-        torch_dataset = bridge.convert(proj_dataset, in_out_features_ids)
+        torch_dataset = bridge.convert(proj_dataset, in_out_features_ids[0])
+        torch_dataset = bridge.convert(
+            proj_dataset, in_out_features_ids[0], in_out_features_ids[1]
+        )
 
         prediction = [
             torch_dataset[0][1].detach().cpu(),

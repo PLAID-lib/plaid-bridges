@@ -7,14 +7,13 @@ for homogeneous data types.
 
 The module exports:
 - BaseBridge: Abstract base class for all bridge implementations
-- MLDataset: Wrapper class for handling data in ML workflows
+- ArrayDataset: Wrapper class for handling data in ML workflows
 - HomogeneousBridge: Transformer for datasets with features of the same type
 """
 
-from plaid_bridges.common.base_regression import (
+from plaid_bridges.common.base import (
     BaseBridge,
-    MLDataset,
 )
-from plaid_bridges.common.homogeneous import HomogeneousBridge
+from plaid_bridges.common.homogeneous import ArrayDataset, HomogeneousBridge
 
-__all__ = ["MLDataset", "BaseBridge", "HomogeneousBridge"]
+__all__ = ["BaseBridge", "ArrayDataset", "HomogeneousBridge"]
