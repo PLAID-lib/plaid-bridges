@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+#
+# This file is subject to the terms and conditions defined in
+# file 'LICENSE.txt', which is part of this source code package.
+#
+#
+
 """Implementation of Grid-like TorchRegressionDatasets.
 
 This module provides a bridge for transforming grid-based features (fields) and

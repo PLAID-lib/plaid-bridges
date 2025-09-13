@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+#
+# This file is subject to the terms and conditions defined in
+# file 'LICENSE.txt', which is part of this source code package.
+#
+#
+
 """Implement `BaseBridge` for transforming datasets in ML pipelines.
 
 This module provides base classes for transforming datasets and creating
