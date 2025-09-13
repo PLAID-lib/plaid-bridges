@@ -1,40 +1,30 @@
 """Implement the `HomogeneousOfflineTransformer` class."""
 
-from typing import Optional
-
 import numpy as np
 from plaid.containers.dataset import Dataset
-from plaid.types import Feature, FeatureIdentifier
+from plaid.types import Feature, FeatureIdentifier, Scalar
 
-from plaid_bridges.common.base_regression import (
-    BaseTransformer,
-)
+from plaid_bridges.common import BaseBridge
 
 
-class HomogeneousOfflineTransformer(BaseTransformer):
-    """HomogeneousOfflineTransformer."""
+class HomogeneousBridge(BaseBridge):
+    """HomogeneousBridge."""
 
-    def __init__(
-        self,
-        features_identifiers: list[FeatureIdentifier],
-    ):
-        super().__init__(
-            features_identifiers,
-        )
-
-        assert len(set([feat_id["type"] for feat_id in features_identifiers])), (
+    def transform(
+        self, dataset: Dataset, features_ids: list[FeatureIdentifier]
+    ) -> np.ndarray:
+        """Transform."""
+        assert len(set([feat_id["type"] for feat_id in features_ids])), (
             "input features not of same type"
         )
 
-    def transform(self, dataset: Dataset) -> tuple[np.ndarray, Optional[np.ndarray]]:
-        """Transform."""
         stacked_features = np.stack(
             [
                 [
-                    (f if f is not None else 0.0)
-                    for f in (
-                        sample.get_feature_from_identifier(fid)
-                        for fid in self.features_identifiers
+                    feature
+                    for feature in (
+                        sample.get_feature_from_identifier(feat_id)
+                        for feat_id in features_ids
                     )
                 ]
                 for sample in dataset
@@ -43,10 +33,19 @@ class HomogeneousOfflineTransformer(BaseTransformer):
 
         return stacked_features
 
-    @staticmethod
-    def inverse_transform_single_feature(
-        feat_id: FeatureIdentifier,  # noqa: ARG004  # ignore unused argument
-        predicted_feature: Feature,
-    ) -> Feature:
-        """inverse_transform single feature."""
-        return predicted_feature
+    def inverse_transform(
+        self,
+        features_ids: list[FeatureIdentifier],
+        all_transformed_features: list[list[np.ndarray]],
+    ) -> list[list[Feature]]:
+        """Inverse transform."""
+        del features_ids
+        all_features = []
+        for transformed_features in all_transformed_features:
+            features = []
+            for transf_feature in transformed_features:
+                assert isinstance(transf_feature, (np.ndarray, Scalar))
+                features.append(transf_feature)
+            all_features.append(features)
+
+        return all_features

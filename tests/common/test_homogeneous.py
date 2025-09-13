@@ -1,32 +1,21 @@
 import numpy as np
 
-from plaid_bridges.common import BaseRegressionDataset, HomogeneousOfflineTransformer
+from plaid_bridges.common import HomogeneousBridge
 
 
 class Test_Base_Torch:
     def test_HomogeneousDataset(self, dataset, scalar_features_ids, field_features_ids):
-        offline_in_transformer = HomogeneousOfflineTransformer(
-            features_identifiers=scalar_features_ids,
-        )
-        offline_out_transformer = HomogeneousOfflineTransformer(
-            features_identifiers=field_features_ids,
+        bridge = HomogeneousBridge()
+
+        homogen_dataset = bridge.convert(dataset, [scalar_features_ids])
+        assert len(homogen_dataset[0]) == 1
+
+        homogen_dataset = bridge.convert(
+            dataset, [scalar_features_ids, field_features_ids]
         )
 
-        homogen_dataset = BaseRegressionDataset(
-            dataset=dataset,
-            offline_in_transformer=offline_in_transformer,
-        )
-        homogen_dataset[0]
-
-        homogen_dataset = BaseRegressionDataset(
-            dataset=dataset,
-            offline_in_transformer=offline_in_transformer,
-            offline_out_transformer=offline_out_transformer,
-        )
-
-        offline_out_transformer.inverse_transform(dataset, [np.arange(3), np.arange(4)])
+        bridge.restore(dataset, [np.zeros((2, 3)), np.ones((3, 4))], field_features_ids)
 
         print(homogen_dataset)
         len(homogen_dataset)
-
         assert len(homogen_dataset[0]) == 2

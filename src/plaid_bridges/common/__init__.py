@@ -1,9 +1,9 @@
 """Module that implements PLAID bridges."""
 
 from plaid_bridges.common.base_regression import (
-    BaseRegressionDataset,
-    BaseTransformer,
+    BaseBridge,
+    MLDataset,
 )
-from plaid_bridges.common.homogeneous import HomogeneousOfflineTransformer
+from plaid_bridges.common.homogeneous import HomogeneousBridge
 
-__all__ = ["BaseRegressionDataset", "BaseTransformer", "HomogeneousOfflineTransformer"]
+__all__ = ["MLDataset", "BaseBridge", "HomogeneousBridge"]

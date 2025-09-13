@@ -1,7 +1,7 @@
 """Module that implements PLAID bridges."""
 
 from plaid_bridges.torch.grid_fields_and_scalars import (
-    GridFieldsAndScalarsOfflineTransformer,
+    GridFieldsAndScalarsBridge,
 )
 
-__all__ = ["GridFieldsAndScalarsOfflineTransformer"]
+__all__ = ["GridFieldsAndScalarsBridge"]

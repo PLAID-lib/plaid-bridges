@@ -90,4 +90,4 @@ def field_features_ids(dataset: Dataset) -> List:
 def in_out_features_ids(scalar_features_ids: List, field_features_ids: List) -> Tuple:
     in_features_identifiers = [scalar_features_ids[0], field_features_ids[0]]
     out_features_identifiers = [field_features_ids[1], scalar_features_ids[1]]
-    return (in_features_identifiers, out_features_identifiers)
+    return [in_features_identifiers, out_features_identifiers]

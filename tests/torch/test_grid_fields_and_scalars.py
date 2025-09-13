@@ -3,39 +3,21 @@ from plaid_ops.mesh.transformations import (
     project_on_regular_grid,
 )
 
-from plaid_bridges.common import BaseRegressionDataset
-from plaid_bridges.torch import GridFieldsAndScalarsOfflineTransformer
+from plaid_bridges.torch import GridFieldsAndScalarsBridge
 
 
 class Test_Torch_Grid:
     def test_GridFieldsAndScalars(self, dataset, in_out_features_ids):
         bbox = compute_bounding_box(dataset)
         proj_dataset = project_on_regular_grid(
-            dataset, dimensions=(5, 5), bbox=bbox, verbose=True
+            dataset, dimensions=(5, 5), bbox=bbox, verbose=False
         )
-
-        offline_in_transformer = GridFieldsAndScalarsOfflineTransformer(
-            features_identifiers=in_out_features_ids[0],
-            dimensions=(5, 5),
-        )
-        offline_out_transformer = GridFieldsAndScalarsOfflineTransformer(
-            features_identifiers=in_out_features_ids[1],
-            dimensions=(5, 5),
-        )
-
-        torch_dataset = BaseRegressionDataset(
-            dataset=proj_dataset,
-            offline_in_transformer=offline_in_transformer,
-        )
-
-        torch_dataset = BaseRegressionDataset(
-            dataset=proj_dataset,
-            offline_in_transformer=offline_in_transformer,
-            offline_out_transformer=offline_out_transformer,
-        )
+        bridge = GridFieldsAndScalarsBridge(dimensions=(5, 5))
+        torch_dataset = bridge.convert(proj_dataset, [in_out_features_ids[0]])
+        torch_dataset = bridge.convert(proj_dataset, in_out_features_ids)
 
         prediction = [
             torch_dataset[0][1].detach().cpu(),
             torch_dataset[1][1].detach().cpu(),
         ]
-        offline_out_transformer.inverse_transform(proj_dataset, prediction)
+        bridge.restore(proj_dataset, prediction, in_out_features_ids[1])
