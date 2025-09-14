@@ -5,6 +5,7 @@ It includes transformers that convert PLAID datasets into PyTorch tensors, enabl
 seamless integration with PyTorch models and training pipelines.
 
 The module exports:
+
 - GridFieldsAndScalarsBridge: Transformer for handling grid-based field data and scalar features
 """
 

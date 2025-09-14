@@ -6,8 +6,11 @@ ML-ready datasets and handling feature transformations, as well as implementatio
 for homogeneous data types.
 
 The module exports:
+
 - BaseBridge: Abstract base class for all bridge implementations
+
 - ArrayDataset: Wrapper class for handling data in ML workflows
+
 - HomogeneousBridge: Transformer for datasets with features of the same type
 """
 

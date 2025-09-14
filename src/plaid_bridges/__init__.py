@@ -6,7 +6,9 @@ conversion of heterogeneous data types (scalars, fields, grids) into tensors
 compatible with popular ML libraries like PyTorch and NumPy.
 
 The module is organized into:
+
 - common: Base classes and generic transformers for homogeneous data
+
 - torch: PyTorch-specific bridges for deep learning applications
 
 Each bridge implements forward transformation for model input and inverse
