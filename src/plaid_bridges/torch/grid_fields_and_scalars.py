@@ -5,12 +5,14 @@
 #
 #
 
-"""Implementation of GridFieldsAndScalarsBridge.
+"""GridFieldsAndScalarsBridge: Transforming grid and scalar features for PyTorch.
 
-This module provides a bridge for transforming grid-based features (fields) and
-scalar features into PyTorch tensors for machine learning workflows. It handles
-both field data that needs to be reshaped into grid dimensions and scalar values
-that can be used directly.
+This module implements the `GridFieldsAndScalarsBridge` class, which enables
+conversion of PLAID datasets containing both grid-based field features and scalar
+features into PyTorch tensors. It supports reshaping field data into specified
+grid dimensions and direct handling of scalar values, making the data suitable
+for deep learning workflows. The bridge also provides inverse transformation to
+convert model predictions back to their original PLAID feature format.
 """
 
 from typing import Sequence
@@ -26,13 +28,12 @@ from plaid_bridges.common import ArrayDataset, BaseBridge
 class GridFieldsAndScalarsBridge(BaseBridge):
     """Bridge for transforming grid fields and scalar features into PyTorch tensors.
 
-    This bridge handles datasets containing two types of features:
-    1. Fields: Multi-dimensional data that needs to be reshaped into grid dimensions
-    2. Scalars: Single numerical values that can be used directly
+    This bridge processes datasets containing two types of features:
+      - Fields: Multi-dimensional arrays that are reshaped into grid dimensions.
+      - Scalars: Single numerical values used directly.
 
-    The bridge transforms these features into PyTorch tensors suitable for
-    deep learning models and can also inverse transform predictions back to
-    their original format.
+    It transforms these features into PyTorch tensors for use in deep learning
+    models, and can also convert predictions back to the original PLAID format.
     """
 
     def __init__(
@@ -42,8 +43,8 @@ class GridFieldsAndScalarsBridge(BaseBridge):
         """Initialize the GridFieldsAndScalarsBridge.
 
         Args:
-            dimensions: The grid dimensions to reshape field features into.
-                       For example, (height, width) for 2D fields.
+            dimensions: The target grid dimensions for reshaping field features,
+                e.g., (height, width) for 2D fields.
         """
         self.dimensions = dimensions
         super().__init__(ArrayDataset)
@@ -53,18 +54,18 @@ class GridFieldsAndScalarsBridge(BaseBridge):
     ) -> torch.Tensor:
         """Transform a single feature into a PyTorch tensor.
 
-        Converts a feature to a PyTorch tensor, reshaping field features
-        according to the specified dimensions while leaving scalar features unchanged.
+        Converts a feature to a PyTorch tensor. Field features are reshaped
+        according to the specified grid dimensions; scalar features are used as-is.
 
         Args:
-            feature: The feature to transform.
-            feature_id: Identifier containing the feature type information.
+            feature: The feature value to transform.
+            feature_id: The feature identifier, including type information.
 
         Returns:
             A PyTorch tensor representation of the feature.
 
         Raises:
-            Exception: If the feature type is not compatible with this transformer.
+            Exception: If the feature type is not supported by this transformer.
         """
         assert feature is not None
         _type = feature_id["type"]
@@ -76,26 +77,27 @@ class GridFieldsAndScalarsBridge(BaseBridge):
             treated_feature = feature.reshape(self.dimensions)
         else:
             raise Exception(
-                f"feature type {_type} not compatible with `GridFieldsAndScalarsTransformer`"
+                f"feature type {_type} not compatible with `GridFieldsAndScalarsBridge`"
             )  # pragma: no cover
         return torch.tensor(treated_feature)
 
     def transform(
         self, dataset: Dataset, *features_ids: list[FeatureIdentifier]
     ) -> tuple[torch.Tensor, ...]:
-        """Transform dataset features into a PyTorch tensor.
+        """Transform dataset features into PyTorch tensors.
 
-        Converts features from a dataset into a multi-dimensional PyTorch tensor
-        where field features are reshaped according to the specified dimensions
-        and scalar features are kept as-is.
+        Converts features from a dataset into one or more multi-dimensional
+        PyTorch tensors. Each tensor corresponds to a list of feature identifiers,
+        with field features reshaped to the specified grid dimensions and scalar
+        features kept as-is.
 
         Args:
-            dataset: The input dataset containing features to transform.
-            features_ids: List of feature identifiers to transform.
+            dataset: The input PLAID dataset containing features to transform.
+            features_ids: One or more lists of feature identifiers to transform.
 
         Returns:
-            A PyTorch tensor of shape (n_samples, n_features, *dimensions)
-            containing the transformed features.
+            A tuple of PyTorch tensors, each of shape
+            ``(n_samples, n_features, *dimensions)``, containing the transformed features.
         """
         tensors = []
         for feat_ids in features_ids:
@@ -113,21 +115,20 @@ class GridFieldsAndScalarsBridge(BaseBridge):
         features_ids: list[FeatureIdentifier],
         all_transformed_features: list[list[torch.Tensor]],
     ) -> list[list[Feature]]:
-        """Inverse transform predicted features to original format.
+        """Inverse transform predicted features to original PLAID format.
 
-        Converts predicted PyTorch tensors back to their original feature format,
-        flattening field features and averaging scalar features as needed.
+        Converts predicted PyTorch tensors back to their original feature format.
+        Field features are flattened; scalar features are averaged.
 
         Args:
             features_ids: List of feature identifiers that were transformed.
-            all_transformed_features: List of transformed features (PyTorch tensors)
-                                     to convert back to original format.
+            all_transformed_features: List of lists of PyTorch tensors to convert back.
 
         Returns:
-            List of features in their original format.
+            A list of lists of features in their original PLAID format.
 
         Raises:
-            Exception: If the feature type is not compatible with this transformer.
+            Exception: If a feature type is not supported by this transformer.
         """
         all_features = []
         for transformed_features in all_transformed_features:
@@ -141,7 +142,7 @@ class GridFieldsAndScalarsBridge(BaseBridge):
                     feature = transf_feature.numpy().flatten()
                 else:
                     raise Exception(
-                        f"feature type {_type} not compatible with `prediction_to_structured_grid`"
+                        f"feature type {_type} not compatible with `GridFieldsAndScalarsBridge`"
                     )  # pragma: no cover
                 features.append(feature)
             all_features.append(features)

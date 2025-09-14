@@ -27,9 +27,17 @@ class BaseBridge(Generic[DatasetType]):
     model input and inverse transformation of predicted features back
     to their original format. It serves as a foundation for creating
     ML-ready datasets from PLAID datasets.
+
+    The class is generic over DatasetType, allowing different implementations
+    to specify their preferred dataset wrapper type.
     """
 
     def __init__(self, dataset_cls: Type[DatasetType]):
+        """Initialize the BaseBridge with a dataset class.
+
+        Args:
+            dataset_cls: The class to use for wrapping transformed data.
+        """
         self.dataset_cls = dataset_cls
 
     def transform(
@@ -78,15 +86,15 @@ class BaseBridge(Generic[DatasetType]):
     ) -> DatasetType:
         """Convert a dataset into an ML-ready format.
 
-        Transforms multiple sets of features from a dataset and wraps
-        them in an ArrayDataset for ML training/inference.
+        Transforms features from a dataset and wraps them in the specified
+        dataset class for ML training/inference.
 
         Args:
             dataset: The input dataset to convert.
-            features_ids: List of feature identifier lists to transform.
+            features_ids: Feature identifier lists to transform.
 
         Returns:
-            An ArrayDataset containing the transformed features.
+            A dataset of type DatasetType containing the transformed features.
         """
         transformed_data = self.transform(dataset, *features_ids)
 

@@ -5,11 +5,15 @@
 #
 #
 
-"""Implement the `HomogeneousBridge` class for transforming homogeneous features.
+"""Homogeneous feature transformers for PLAID bridges.
 
-This module provides a bridge for handling datasets where all features
-are of the same type. It enables efficient transformation of homogeneous
-features into NumPy arrays for machine learning workflows.
+This module provides the `HomogeneousBridge` class and the `ArrayDataset` wrapper,
+enabling efficient transformation of datasets where all features are of the same type
+(e.g., all scalars or all fields). These tools convert homogeneous features from
+PLAID datasets into stacked NumPy arrays or tensors, making them suitable for
+machine learning workflows. The bridge supports both forward transformation for
+model input and inverse transformation for converting predictions back to the
+original data format.
 """
 
 from typing import TYPE_CHECKING, Union
@@ -18,7 +22,7 @@ import numpy as np
 from plaid.containers.dataset import Dataset
 from plaid.types import Feature, FeatureIdentifier, Scalar
 
-from plaid_bridges.common import BaseBridge
+from plaid_bridges.common.base import BaseBridge
 
 if TYPE_CHECKING:
     import torch
@@ -38,7 +42,7 @@ class ArrayDataset:
         """Initialize the ArrayDataset with multiple data sources.
 
         Args:
-            all_data: Variable number of data arrays/tensors to be wrapped.
+            all_data: Tuple of data arrays/tensors to be wrapped.
                       All data sources must have the same length.
         """
         self.all_data = all_data
@@ -79,22 +83,23 @@ class HomogeneousBridge(BaseBridge):
     def transform(
         self, dataset: Dataset, *features_ids: list[FeatureIdentifier]
     ) -> tuple[np.ndarray, ...]:
-        """Transform homogeneous features into a NumPy array.
+        """Transform homogeneous features into NumPy arrays.
 
-        Converts features of the same type from a dataset into a stacked NumPy array
-        suitable for machine learning models.
+        Converts features of the same type from a dataset into stacked NumPy arrays
+        suitable for machine learning models. Each list of feature identifiers
+        produces a separate array in the returned tuple.
 
         Args:
             dataset: The input dataset containing the features to transform.
-            features_ids: List of feature identifiers to transform. All features
-                         must be of the same type.
+            features_ids: Variable number of lists of feature identifiers to transform.
+                         All features within each list must be of the same type.
 
         Returns:
-            A NumPy array of shape (n_samples, n_features) containing the
-            transformed features.
+            A tuple of NumPy arrays, each of shape (n_samples, n_features) containing
+            the transformed features for each list of feature identifiers.
 
         Raises:
-            AssertionError: If the features are not all of the same type.
+            AssertionError: If features within any list are not all of the same type.
         """
         for feat_ids in features_ids:
             assert len(set([feat_id["type"] for feat_id in feat_ids])), (
