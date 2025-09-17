@@ -45,7 +45,6 @@ The code is hosted on `GitHub <https://github.com/PLAID-lib/plaid-bridges>`_
 
    source/contributing.md
 
-
 Indices and tables
 ==================
 

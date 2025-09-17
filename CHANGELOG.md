@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- common, homogenous, torch grid and torch geometric bridges, with corresponding tests, notebooks examples and doc.
+
 ### Changed
 
 ### Removed
