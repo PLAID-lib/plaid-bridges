@@ -34,7 +34,7 @@ classifiers = [
 dependencies = [
     "torch",
     "torch-geometric",
-    "pyplaid @ git+https://github.com/PLAID-lib/plaid.git",
+    "pyplaid==0.1.8",
 ]
 
 dynamic = ["version"]
@@ -79,5 +79,5 @@ dev = [
     "myst-parser",
     "jupytext",
     "furo",
-    "plaid-ops @ git+https://github.com/PLAID-lib/plaid-ops.git@0c03a615dcd34fcc0d02b7067a065506b25df4ec",
+    "plaid-ops==0.1.8",
 ]

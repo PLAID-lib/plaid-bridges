@@ -14,3 +14,8 @@ The module is organized into:
 Each bridge implements forward transformation for model input and inverse
 transformation for converting predictions back to the original data format.
 """
+
+try:
+    from ._version import __version__
+except ImportError:  # pragma: no cover
+    __version__ = "None"
