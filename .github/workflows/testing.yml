@@ -29,7 +29,7 @@ jobs:
 
       - name: Install VC++ runtime (Windows only)
         if: runner.os == 'Windows'
-        run: choco install vcredist2022 -y
+        run: choco install vcredist2017 -y
 
       - name: Set up Conda with Mamba
         uses: conda-incubator/setup-miniconda@v2
