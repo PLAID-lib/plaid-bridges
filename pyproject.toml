@@ -79,5 +79,5 @@ dev = [
     "myst-parser",
     "jupytext",
     "furo",
-    "plaid-ops @ git+https://github.com/PLAID-lib/plaid-ops.git",
+    "plaid-ops @ git+https://github.com/PLAID-lib/plaid-ops.git@0c03a615dcd34fcc0d02b7067a065506b25df4ec",
 ]
