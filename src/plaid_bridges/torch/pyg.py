@@ -117,8 +117,10 @@ class PyGBridge(BaseBridge):
             scalars = []
             scalar_names = []
 
-            default_base = sample.get_base_assignment(self.base_name)
-            default_zone = sample.get_zone_assignment(self.zone_name, self.base_name)
+            default_base = sample.meshes.get_base_assignment(self.base_name)
+            default_zone = sample.meshes.get_zone_assignment(
+                self.zone_name, self.base_name
+            )
 
             for feat_id in features_ids:
                 feature = sample.get_feature_from_identifier(feat_id)
@@ -137,9 +139,11 @@ class PyGBridge(BaseBridge):
             fields = torch.tensor(np.array(fields).T)
             scalars = torch.tensor(np.array(scalars))
 
-            nodes = torch.tensor(sample.get_nodes(self.zone_name, self.base_name))
+            nodes = torch.tensor(
+                sample.meshes.get_nodes(self.zone_name, self.base_name)
+            )
 
-            elements = sample.get_elements(self.zone_name, self.base_name)
+            elements = sample.meshes.get_elements(self.zone_name, self.base_name)
             edges = []
             for element_array in elements.values():
                 element_array = np.array(element_array)

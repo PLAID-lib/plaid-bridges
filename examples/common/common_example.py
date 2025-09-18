@@ -34,14 +34,13 @@ from torch.utils.data import DataLoader
 from plaid_bridges.common import HomogeneousBridge
 
 # %%
-hf_dataset = load_dataset("PLAID-datasets/VKI-LS59", split="all_samples[:10]")
-sample = Sample.model_validate(pickle.loads(hf_dataset[0]["sample"]))
+hf_dataset = load_dataset("PLAID-datasets/VKI-LS59", split="all_samples[:2]")
 
 pb_def = huggingface_description_to_problem_definition(hf_dataset.info.description)
-ids = pb_def.get_split("train")[:10]
+ids = pb_def.get_split("train")[:2]
 
 dataset, _ = huggingface_dataset_to_plaid(
-    hf_dataset, ids=ids, processes_number=5, verbose=False
+    hf_dataset, ids=ids, processes_number=2, verbose=False
 )
 print(dataset)
 

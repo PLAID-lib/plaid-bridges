@@ -57,7 +57,7 @@ def sample():
 def sample_with_tree(tree: CGNSTree) -> Sample:
     """Generate a Sample objects with a tree."""
     sample = Sample()
-    sample.add_tree(tree)
+    sample.meshes.add_tree(tree)
     sample.add_scalar("in_scalar", 1.0)
     sample.add_scalar("out_scalar", 2.0)
     sample.add_time_series("b", [0.0, 1.0], [3.0, 4.0])

@@ -43,10 +43,10 @@ hf_dataset = load_dataset(
     "PLAID-datasets/2D_Multiscale_Hyperelasticity", split="all_samples"
 )
 pb_def = huggingface_description_to_problem_definition(hf_dataset.info.description)
-ids_train = pb_def.get_split("DOE_train")[:10]
+ids_train = pb_def.get_split("DOE_train")[:2]
 
 dataset_train, _ = huggingface_dataset_to_plaid(
-    hf_dataset, ids=ids_train, processes_number=5, verbose=False
+    hf_dataset, ids=ids_train, processes_number=2, verbose=False
 )
 
 print(dataset_train)
