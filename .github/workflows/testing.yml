@@ -27,6 +27,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Install VC++ runtime (Windows only)
+        if: runner.os == 'Windows'
+        run: choco install vcredist140 -y
+
       - name: Set up Conda with Mamba
         uses: conda-incubator/setup-miniconda@v2
         with:
