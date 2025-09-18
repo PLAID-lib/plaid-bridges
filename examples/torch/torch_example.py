@@ -16,6 +16,9 @@
 # # Torch bridges examples
 
 # %%
+import logging
+logging.disable(logging.CRITICAL)
+
 import copy
 
 import numpy as np
@@ -46,7 +49,7 @@ pb_def = huggingface_description_to_problem_definition(hf_dataset.info.descripti
 ids_train = pb_def.get_split("DOE_train")[:2]
 
 dataset_train, _ = huggingface_dataset_to_plaid(
-    hf_dataset, ids=ids_train, processes_number=2, verbose=False
+    hf_dataset, ids=ids_train, processes_number=2   , verbose=False
 )
 
 print(dataset_train)

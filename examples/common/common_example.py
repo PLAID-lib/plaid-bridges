@@ -19,8 +19,10 @@
 # ## Homogeneous dataset
 
 # %%
+import logging
+logging.disable(logging.CRITICAL)
+
 import copy
-import pickle
 
 import numpy as np
 from datasets import load_dataset
@@ -28,7 +30,6 @@ from plaid.bridges.huggingface_bridge import (
     huggingface_dataset_to_plaid,
     huggingface_description_to_problem_definition,
 )
-from plaid.containers.sample import Sample
 from torch.utils.data import DataLoader
 
 from plaid_bridges.common import HomogeneousBridge
