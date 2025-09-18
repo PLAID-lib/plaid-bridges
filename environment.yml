@@ -5,7 +5,10 @@ channels:
 dependencies:
   - python=3.11
 ##### DEV #####
-  - muscat=2.5.0
+  - hdf5
+  - vtk>=9.4
+  - pycgns-core
+  - muscat-core=2.5
   - pip
   - pip:
 ##### RUN #####
@@ -13,7 +16,7 @@ dependencies:
     - torch-geometric
     - git+https://github.com/PLAID-lib/plaid.git
 ##### DEV #####
-    - git+https://github.com/PLAID-lib/plaid-ops.git
+    - git+https://github.com/PLAID-lib/plaid-ops.git@0c03a615dcd34fcc0d02b7067a065506b25df4ec
 #---# testing
     - pytest
     - pytest-cov
@@ -27,7 +30,5 @@ dependencies:
     - sphinx-autoapi
     - myst-nb
     - myst-parser
-    - nbconvert
-
+    - jupytext
     - furo
-

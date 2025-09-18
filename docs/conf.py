@@ -34,6 +34,19 @@ sys.path.insert(0, str(basedir / "notebooks"))
 print(sys.path)
 
 
+# -- Copy and convert notebooks -----------------------------------------------------
+shutil.copytree(basedir / "examples", basedir / "docs" / "source" / "notebooks", dirs_exist_ok=True)
+
+root = basedir / "docs" / "source" / "notebooks"
+for file in root.rglob("*_example.py"):
+    print(file)
+    subprocess.run([
+        "jupytext",
+        "--to", "ipynb",
+        file
+    ], check=True)
+
+
 # -- Project information -----------------------------------------------------
 root_doc = "index"  # default is already <index>
 project = "plaid-bridges"
@@ -60,9 +73,13 @@ extensions = [
     "sphinx.ext.graphviz",
     "myst_nb",
     "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
     # "sphinxcontrib.bibtex", # not installed
     # "sphinx_tabs.tabs", # not installed
 ]
+
+nb_execution_mode = "force"
+jupytext_formats = "ipynb,py:percent"
 
 bibtex_bibfiles = ["refs.bib"]
 bibtex_encoding = "latin"
@@ -220,21 +237,6 @@ github_url = "https://github.com/PLAID-lib/plaid-bridges"
 
 
 # -----------------------------------------------------------------------------#
-
-def copy_notebooks(app, config):
-    src_dir = Path(__file__).parent.parent / "notebooks"   # adjust path
-    dst_dir = Path(__file__).parent / "source" / "notebooks"
-    dst_dir.mkdir(parents=True, exist_ok=True)
-
-    for nb in src_dir.glob("*.ipynb"):
-        shutil.copy(nb, dst_dir / nb.name)
-
-def setup(app):
-    app.connect("config-inited", copy_notebooks)
-
-
-# -----------------------------------------------------------------------------#
-
 
 def get_git_info():
     """Version retrieve mechanism for docs (resort to tag or branch-commit-id).

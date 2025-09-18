@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- (docs/notebooks) configure examples folder with jupytext
 - common, homogenous, torch grid and torch geometric bridges, with corresponding tests, notebooks examples and doc.
 
 ### Changed
