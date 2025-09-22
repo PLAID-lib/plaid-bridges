@@ -22,9 +22,13 @@
 import logging
 logging.disable(logging.CRITICAL)
 
+import warnings
+warnings.filterwarnings("ignore", message=".*IProgress not found.*")
+
 import copy
 
 import numpy as np
+from datasets.utils.logging import disable_progress_bar
 from datasets import load_dataset
 from plaid.bridges.huggingface_bridge import (
     huggingface_dataset_to_plaid,
@@ -33,6 +37,8 @@ from plaid.bridges.huggingface_bridge import (
 from torch.utils.data import DataLoader
 
 from plaid_bridges.common import HomogeneousBridge
+
+disable_progress_bar()
 
 # %%
 hf_dataset = load_dataset("PLAID-datasets/VKI-LS59", split="all_samples[:2]")

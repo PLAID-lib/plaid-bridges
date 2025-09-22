@@ -19,9 +19,13 @@
 import logging
 logging.disable(logging.CRITICAL)
 
+import warnings
+warnings.filterwarnings("ignore", message=".*IProgress not found.*")
+
 import copy
 
 import numpy as np
+from datasets.utils.logging import disable_progress_bar
 from datasets import load_dataset
 from plaid.bridges.huggingface_bridge import (
     huggingface_dataset_to_plaid,
@@ -37,6 +41,8 @@ from torch_geometric.loader import DataLoader as PyGDataLoader
 
 from plaid_bridges.torch import GridFieldsAndScalarsBridge, PyGBridge
 from plaid_bridges.torch.pyg import plot_sample_field, plot_sample_mesh
+
+disable_progress_bar()
 
 # %% [markdown]
 # ## Projection on constant rectilinear grid, with scalars as constant fields
