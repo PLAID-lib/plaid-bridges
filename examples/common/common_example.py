@@ -38,7 +38,7 @@ from torch.utils.data import DataLoader
 
 from plaid_bridges.common import HomogeneousBridge
 
-disable_progress_bar
+disable_progress_bar()
 
 # %%
 hf_dataset = load_dataset("PLAID-datasets/VKI-LS59", split="all_samples[:2]")
