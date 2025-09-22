@@ -7,43 +7,81 @@
 
     <br>
 
-.. image:: https://plaid-lib.github.io/assets/images/PLAID-large-logo.png
+.. image:: https://plaid-lib.github.io/assets/images/plaid-bridges-logo.png
    :align: center
    :width: 300px
 
-PLAID (Physics Learning AI Datamodel) integrations into machine learning frameworks.
++-------------+-----------------------------------------------------------------------------------------------+
+| **Testing** | |CI Status| |Docs| |Coverage| |Last Commit|                                                   |
++-------------+-----------------------------------------------------------------------------------------------+
+| **Package** | |PyPI Version| |PyPi Downloads| |Platform| |Python Version|                                   |
++-------------+-----------------------------------------------------------------------------------------------+
+| **Meta**    | |License| |GitHub Stars|                                                                      |
++-------------+-----------------------------------------------------------------------------------------------+
+
+
+.. |CI Status| image:: https://github.com/PLAID-lib/plaid-bridges/actions/workflows/testing.yml/badge.svg
+   :target: https://github.com/PLAID-lib/plaid-bridges/actions/workflows/testing.yml
+
+.. |Docs| image:: https://readthedocs.org/projects/plaid-bridges/badge/?version=latest
+   :target: https://plaid-bridges.readthedocs.io/en/latest/?badge=latest
+
+.. |Coverage| image:: https://codecov.io/gh/plaid-lib/plaid-bridges/branch/main/graph/badge.svg
+   :target: https://app.codecov.io/gh/plaid-lib/plaid-bridges/tree/main?search=&displayType=list
+
+.. |Last Commit| image:: https://img.shields.io/github/last-commit/PLAID-lib/plaid-bridges/main
+   :target: https://github.com/PLAID-lib/plaid-bridges/commits/main
+
+.. |PyPI Version| image:: https://img.shields.io/pypi/v/plaid-bridges.svg
+   :target: https://pypi.org/project/plaid-bridges/
+
+.. |Platform| image:: https://img.shields.io/badge/platform-any-blue
+   :target: https://github.com/PLAID-lib/plaid-bridges
+
+.. |Python Version| image:: https://img.shields.io/pypi/pyversions/plaid-bridges
+   :target: https://github.com/PLAID-lib/plaid-bridges
+
+.. |PyPi Downloads| image:: https://static.pepy.tech/badge/plaid-bridges
+   :target: https://pepy.tech/projects/plaid-bridges
+
+.. |License| image:: https://anaconda.org/conda-forge/plaid/badges/license.svg
+   :target: https://github.com/PLAID-lib/plaid-bridges/blob/main/LICENSE.txt
+
+.. |GitHub Stars| image:: https://img.shields.io/github/stars/PLAID-lib/plaid-bridges?style=social
+   :target: https://github.com/PLAID-lib/plaid-bridges
 
 
 .. warning::
 
-   The code is still in its initial configuration stages, consider not using it for the moment. This is also the case for tentative PyPi packages being configured.
+   The code is still in its initial configuration stages; interfaces may change. Use with care.
 
-PLAID is a library proposing an implementation for a datamodel tailored for AI and ML learning of physics problems.
-It has been developped at SafranTech, the research center of `Safran group <https://www.safran-group.com/>`_
+Plaid-bridges offers high-level adapters that connect PLAID datasets with popular machine learning ecosystems.
+It has been developed at SafranTech, the research center of `Safran group <https://www.safran-group.com/>`_.
 
-The code is hosted on `GitHub <https://github.com/PLAID-lib/plaid-bridges>`_
+The code is hosted on `GitHub <https://github.com/PLAID-lib/plaid-bridges>`_ and the Python package is published as ``plaid-bridges``.
 
 .. toctree::
    :glob:
    :maxdepth: 1
-   :caption: Getting Started
+   :caption: Overview
 
    source/quickstart.md
 
 .. toctree::
    :glob:
    :maxdepth: 1
-   :caption: API Documentation
+   :caption: Advanced
 
-   Autoapi <autoapi/plaid_bridges/index>
-   Examples & Tutorials <source/notebooks.rst>
+   source/contributing.md
 
 .. toctree::
    :glob:
    :maxdepth: 1
-   :caption: Contributing
+   :caption: Documentation
 
-   source/contributing.md
+   API Reference <autoapi/plaid_bridges/index>
+   Examples & Tutorials <source/notebooks.rst>
+
 
 Indices and tables
 ==================
