@@ -58,6 +58,6 @@ plaid-bridges provides high-level adapters that connect PLAID datasets with popu
 ## 3 Going further
 
 See the documentation for a concise getting started guide and end-to-end examples:
-- [Getting Started](https://plaid-bridges.readthedocs.io/en/latest/source/getting_started.html)
+- [Quickstart](https://plaid-bridges.readthedocs.io/en/latest/source/quickstart.html)
 - [Examples & Tutorials](https://plaid-bridges.readthedocs.io/en/latest/source/notebooks.html)
 - [API reference](https://plaid-bridges.readthedocs.io/en/latest/autoapi/plaid_bridges/index.html)
