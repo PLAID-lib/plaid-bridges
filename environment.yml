@@ -14,9 +14,11 @@ dependencies:
 ##### RUN #####
     - torch
     - torch-geometric
-    - pyplaid==0.1.8
+    # - pyplaid==0.1.8
+    - "pyplaid @ git+https://github.com/PLAID-lib/plaid.git@globals"
 ##### DEV #####
-    - plaid-ops==0.1.8
+    # - plaid-ops==0.1.8
+    - "plaid-ops @ git+https://github.com/PLAID-lib/plaid-ops.git@globals"
 #---# testing
     - pytest
     - pytest-cov

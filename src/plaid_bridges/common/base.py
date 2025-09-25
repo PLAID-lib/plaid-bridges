@@ -124,5 +124,4 @@ class BaseBridge(Generic[DatasetType]):
         pred_features_dict: dict[int, list[Feature]] = {
             id: all_features[i] for i, id in enumerate(dataset.get_sample_ids())
         }
-
         return dataset.update_features_from_identifier(features_ids, pred_features_dict)
