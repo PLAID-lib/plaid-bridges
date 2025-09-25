@@ -1,13 +1,14 @@
 # ---
 # jupyter:
 #   jupytext:
+#     custom_cell_magics: kql
 #     text_representation:
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.17.3
+#       jupytext_version: 1.11.2
 #   kernelspec:
-#     display_name: plaid-bridged
+#     display_name: plaid-bridges
 #     language: python
 #     name: python3
 # ---
@@ -32,7 +33,6 @@ from datasets.utils.logging import disable_progress_bar
 from datasets import load_dataset
 from plaid.bridges.huggingface_bridge import (
     huggingface_dataset_to_plaid,
-    huggingface_description_to_problem_definition,
 )
 from torch.utils.data import DataLoader
 
@@ -43,11 +43,8 @@ disable_progress_bar()
 # %%
 hf_dataset = load_dataset("PLAID-datasets/VKI-LS59", split="all_samples[:2]")
 
-pb_def = huggingface_description_to_problem_definition(hf_dataset.info.description)
-ids = pb_def.get_split("train")[:2]
-
 dataset, _ = huggingface_dataset_to_plaid(
-    hf_dataset, ids=ids, processes_number=2, verbose=False
+    hf_dataset, processes_number=2, verbose=False
 )
 print(dataset)
 
@@ -81,7 +78,7 @@ loader = DataLoader(
 )
 
 out_feat_id = out_features_identifiers[0]
-before = copy.deepcopy(dataset[ids[1]].get_feature_from_identifier(out_feat_id))
+before = copy.deepcopy(dataset[1].get_feature_from_identifier(out_feat_id))
 
 predictions = []
 for batch_x, batch_y in loader:
@@ -90,7 +87,7 @@ for batch_x, batch_y in loader:
 
 dataset_pred = bridge.restore(dataset, predictions, out_features_identifiers)
 
-after = copy.deepcopy(dataset_pred[ids[1]].get_feature_from_identifier(out_feat_id))
+after = copy.deepcopy(dataset_pred[1].get_feature_from_identifier(out_feat_id))
 
 print("Error after transform then inverse transform (2nd sample):")
 print(np.linalg.norm(after - before) / np.linalg.norm(before))
@@ -118,7 +115,7 @@ loader = DataLoader(
 )
 
 out_feat_id = out_features_identifiers[0]
-before = copy.deepcopy(dataset[ids[1]].get_feature_from_identifier(out_feat_id))
+before = copy.deepcopy(dataset[1].get_feature_from_identifier(out_feat_id))
 
 predictions = []
 for batch_x, batch_y in loader:
@@ -127,7 +124,7 @@ for batch_x, batch_y in loader:
 
 dataset_pred = bridge.restore(dataset, predictions, out_features_identifiers)
 
-after = copy.deepcopy(dataset_pred[ids[1]].get_feature_from_identifier(out_feat_id))
+after = copy.deepcopy(dataset_pred[1].get_feature_from_identifier(out_feat_id))
 
 print("Error after transform then inverse transform (2nd sample):")
 print(np.linalg.norm(after - before) / np.linalg.norm(before))

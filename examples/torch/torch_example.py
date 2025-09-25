@@ -30,7 +30,6 @@ from datasets.utils.logging import disable_progress_bar
 from datasets import load_dataset
 from plaid.bridges.huggingface_bridge import (
     huggingface_dataset_to_plaid,
-    huggingface_description_to_problem_definition,
 )
 from plaid_ops.mesh.feature_engineering import update_dataset_with_sdf
 from plaid_ops.mesh.transformations import (
@@ -52,12 +51,8 @@ disable_progress_bar()
 hf_dataset = load_dataset(
     "PLAID-datasets/Tensile2d", split="all_samples[:2]"
 )
-pb_def = huggingface_description_to_problem_definition(hf_dataset.info.description)
-# ids_train = pb_def.get_split("train")[:2]
-
-ids_train = [0,1]
 dataset_train, _ = huggingface_dataset_to_plaid(
-    hf_dataset, ids=ids_train, processes_number=2, verbose=False
+    hf_dataset, processes_number=2, verbose=False
 )
 
 print(dataset_train)
@@ -71,7 +66,7 @@ projected_dataset_train = project_on_regular_grid(
     dataset_train, dimensions=dims, bbox=bbox, verbose=False
 )
 
-all_feat_ids = dataset_train[ids_train[0]].get_all_features_identifiers()
+all_feat_ids = dataset_train[0].get_all_features_identifiers()
 scalar_features = [f for f in all_feat_ids if "scalar" in f.values()]
 field_features = [f for f in all_feat_ids if "field" in f.values()]
 
@@ -93,7 +88,7 @@ loader = DataLoader(
 out_feat_id = scalar_features[0]
 
 before = copy.deepcopy(
-    projected_dataset_train[ids_train[1]].get_feature_from_identifier(out_feat_id)
+    projected_dataset_train[1].get_feature_from_identifier(out_feat_id)
 )
 
 predictions = []
@@ -106,7 +101,7 @@ pred_projected_dataset_train = bridge.restore(
 )
 
 after = copy.deepcopy(
-    pred_projected_dataset_train[ids_train[1]].get_feature_from_identifier(out_feat_id)
+    pred_projected_dataset_train[1].get_feature_from_identifier(out_feat_id)
 )
 
 print("Error after transform then inverse transform (2nd sample):")
@@ -133,7 +128,7 @@ loader = PyGDataLoader(
 )
 
 before = copy.deepcopy(
-    dataset_train[ids_train[1]].get_feature_from_identifier(in_features_identifiers[1])
+    dataset_train[1].get_feature_from_identifier(in_features_identifiers[1])
 )
 
 predictions = []
@@ -147,7 +142,7 @@ for batch in loader:
 pred_dataset_train = bridge.restore(dataset_train, predictions, in_features_identifiers)
 
 after = copy.deepcopy(
-    pred_dataset_train[ids_train[1]].get_feature_from_identifier(
+    pred_dataset_train[1].get_feature_from_identifier(
         in_features_identifiers[1]
     )
 )
@@ -166,18 +161,15 @@ plot_sample_field(pyg_dataset[0], pyg_dataset[0].field_names[0], block = False)
 
 # %%
 hf_dataset = load_dataset("PLAID-datasets/VKI-LS59", split="all_samples[:2]")
-pb_def = huggingface_description_to_problem_definition(hf_dataset.info.description)
-# ids_train = pb_def.get_split("train")[:10]
 
-ids_train = [0,1]
 dataset_train, _ = huggingface_dataset_to_plaid(
-    hf_dataset, ids=ids_train, processes_number=2, verbose=False
+    hf_dataset, processes_number=2, verbose=False
 )
 
 print(dataset_train)
 
 # %%
-all_feat_ids = dataset_train[ids_train[0]].get_all_features_identifiers()
+all_feat_ids = dataset_train[0].get_all_features_identifiers()
 scalar_features = [f for f in all_feat_ids if "scalar" in f.values()]
 
 # %% [markdown]
