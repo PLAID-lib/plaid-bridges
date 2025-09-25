@@ -50,13 +50,14 @@ disable_progress_bar()
 
 # %%
 hf_dataset = load_dataset(
-    "PLAID-datasets/Tensile2d", split="all_samples"
+    "PLAID-datasets/Tensile2d", split="all_samples[:2]"
 )
 pb_def = huggingface_description_to_problem_definition(hf_dataset.info.description)
-ids_train = pb_def.get_split("train_500")[:2]
+# ids_train = pb_def.get_split("train")[:2]
 
+ids_train = [0,1]
 dataset_train, _ = huggingface_dataset_to_plaid(
-    hf_dataset, ids=ids_train, processes_number=2   , verbose=False
+    hf_dataset, ids=ids_train, processes_number=2, verbose=False
 )
 
 print(dataset_train)
@@ -164,12 +165,13 @@ plot_sample_field(pyg_dataset[0], pyg_dataset[0].field_names[0], block = False)
 # ### Multi-base example: VKI-LS59
 
 # %%
-hf_dataset = load_dataset("PLAID-datasets/VKI-LS59", split="all_samples")
+hf_dataset = load_dataset("PLAID-datasets/VKI-LS59", split="all_samples[:2]")
 pb_def = huggingface_description_to_problem_definition(hf_dataset.info.description)
-ids_train = pb_def.get_split("train")[:10]
+# ids_train = pb_def.get_split("train")[:10]
 
+ids_train = [0,1]
 dataset_train, _ = huggingface_dataset_to_plaid(
-    hf_dataset, ids=ids_train, processes_number=5, verbose=False
+    hf_dataset, ids=ids_train, processes_number=2, verbose=False
 )
 
 print(dataset_train)
