@@ -49,7 +49,7 @@ jobs:
       #     conda run -n plaid-bridges python -m pip install -e .[dev]
 
       - name: Set up Env with Mamba
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v2
         with:
           use-mamba: true
           python-version: 3.11
