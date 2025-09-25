@@ -1,13 +1,14 @@
 # ---
 # jupyter:
 #   jupytext:
+#     custom_cell_magics: kql
 #     text_representation:
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.17.3
+#       jupytext_version: 1.11.2
 #   kernelspec:
-#     display_name: plaid-bridged
+#     display_name: plaid-bridges
 #     language: python
 #     name: python3
 # ---
@@ -49,10 +50,10 @@ disable_progress_bar()
 
 # %%
 hf_dataset = load_dataset(
-    "PLAID-datasets/2D_Multiscale_Hyperelasticity", split="all_samples"
+    "PLAID-datasets/Tensile2d", split="all_samples"
 )
 pb_def = huggingface_description_to_problem_definition(hf_dataset.info.description)
-ids_train = pb_def.get_split("DOE_train")[:2]
+ids_train = pb_def.get_split("train_500")[:2]
 
 dataset_train, _ = huggingface_dataset_to_plaid(
     hf_dataset, ids=ids_train, processes_number=2   , verbose=False
@@ -114,7 +115,7 @@ print(np.linalg.norm(after - before) / np.linalg.norm(before))
 # ## Pytorch geometric
 
 # %% [markdown]
-# ### Heterogenous example: 2D_Multiscale_Hyperelasticity
+# ### Heterogenous example: Tensile2d
 
 # %%
 bridge = PyGBridge()
