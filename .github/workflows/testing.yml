@@ -26,11 +26,25 @@ jobs:
         #   - os: macos-latest
         #     python-version: 3.13
     env:
+      # Conda configuration
       CONDA_PKGS_DIRS: ${{ github.workspace }}/conda_pkgs_dir
       CONDA_ENVS_PATH: ${{ github.workspace }}/conda_envs
+      # Pip cache
       PIP_CACHE_DIR: ${{ github.workspace }}/.pip_cache
+      # Temporary directories
+      TMPDIR: ${{ github.workspace }}/tmp
+      TEMP: ${{ github.workspace }}/tmp
+      TMP: ${{ github.workspace }}/tmp
 
     steps:
+
+      - name: Create temp directories
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/tmp
+          mkdir -p $GITHUB_WORKSPACE/conda_pkgs_dir
+          mkdir -p $GITHUB_WORKSPACE/conda_envs
+          mkdir -p $GITHUB_WORKSPACE/.pip_cache
+
       - name: Install free (procps)
         run: sudo apt-get update && sudo apt-get install -y procps
 
@@ -41,8 +55,8 @@ jobs:
           remove-dotnet: 'true'         # +3 GB
           remove-haskell: 'true'        # +2 GB
           remove-docker-images: 'true'  # +3 GB
-          # remove-swapfile: 'false'
-          # remove-tool-cache: 'true'
+          remove-tool-cache: 'true'
+          remove-swapfile: 'false'
           # build-mount-path: '/var/lib/docker'
 
       - name: Checkout code
@@ -59,6 +73,7 @@ jobs:
           python-version: 3.11
           auto-activate-base: false
           miniforge-variant: Miniforge3
+          miniforge-path: ${{ github.workspace }}/miniconda3
 
       - name: Create environment
         run: |
