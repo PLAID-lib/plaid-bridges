@@ -19,15 +19,15 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
 
     steps:
-      - name: Install free (procps)
-        run: sudo apt-get update && sudo apt-get install -y procps
+      # - name: Install free (procps)
+      #   run: sudo apt-get update && sudo apt-get install -y procps
 
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        with:
-          root-reserve-mb: 512
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
+      # - name: Maximize build space
+      #   uses: easimon/maximize-build-space@master
+      #   with:
+      #     root-reserve-mb: 512
+      #     swap-size-mb: 1024
+      #     remove-dotnet: 'true'
 
       - name: Checkout code
         uses: actions/checkout@v5

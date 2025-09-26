@@ -30,12 +30,12 @@ jobs:
       - name: Install free (procps)
         run: sudo apt-get update && sudo apt-get install -y procps
 
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        with:
-          root-reserve-mb: 512
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
+      # - name: Maximize build space
+      #   uses: easimon/maximize-build-space@master
+      #   with:
+      #     root-reserve-mb: 512
+      #     swap-size-mb: 1024
+      #     remove-dotnet: 'true'
 
       - name: Checkout code
         uses: actions/checkout@v5
