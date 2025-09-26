@@ -38,12 +38,16 @@ jobs:
 
     steps:
 
+      - name: Checkout code
+        uses: actions/checkout@v5
+
       - name: Create temp directories
         run: |
           mkdir -p $GITHUB_WORKSPACE/tmp
           mkdir -p $GITHUB_WORKSPACE/conda_pkgs_dir
           mkdir -p $GITHUB_WORKSPACE/conda_envs
           mkdir -p $GITHUB_WORKSPACE/.pip_cache
+          mkdir -p $GITHUB_WORKSPACE/miniconda3
 
       - name: Install free (procps)
         run: sudo apt-get update && sudo apt-get install -y procps
@@ -59,20 +63,26 @@ jobs:
           # remove-swapfile: 'false'
           # build-mount-path: '/var/lib/docker'
 
-      - name: Checkout code
-        uses: actions/checkout@v5
-
       - name: Install VC++ runtime (Windows only)
         if: runner.os == 'Windows'
         run: choco install vcredist2017 -y
 
-      - name: Set up Conda with Mamba
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          use-mamba: false
-          python-version: 3.11
-          auto-activate-base: false
-          miniforge-variant: Miniforge3
+      # - name: Set up Conda with Mamba
+      #   uses: conda-incubator/setup-miniconda@v2
+      #   with:
+      #     use-mamba: false
+      #     python-version: 3.11
+      #     auto-activate-base: false
+      #     miniforge-variant: Miniforge3
+
+      - name: Install Miniconda manually in workspace
+        run: |
+          TMPDIR=$GITHUB_WORKSPACE/tmp \
+          TEMP=$GITHUB_WORKSPACE/tmp \
+          TMP=$GITHUB_WORKSPACE/tmp \
+          curl -sL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -o miniforge.sh
+          bash miniforge.sh -b -p $GITHUB_WORKSPACE/miniconda3
+          echo "$GITHUB_WORKSPACE/miniconda3/bin" >> $GITHUB_PATH
 
       - name: Create environment
         run: |
