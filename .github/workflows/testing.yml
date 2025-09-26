@@ -73,7 +73,6 @@ jobs:
           python-version: 3.11
           auto-activate-base: false
           miniforge-variant: Miniforge3
-          miniforge-path: ${{ github.workspace }}/miniconda3
 
       - name: Create environment
         run: |
