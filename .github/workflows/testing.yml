@@ -20,13 +20,36 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest] #windows-latest]
+        os: [ubuntu-latest] #, macos-latest] #windows-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
-        exclude:
-          - os: macos-latest
-            python-version: 3.13
+        # exclude:
+        #   - os: macos-latest
+        #     python-version: 3.13
+    env:
+      # Conda configuration
+      CONDA_PKGS_DIRS: ${{ github.workspace }}/conda_pkgs_dir
+      CONDA_ENVS_PATH: ${{ github.workspace }}/conda_envs
+      # Pip cache
+      PIP_CACHE_DIR: ${{ github.workspace }}/.pip_cache
+      # Temporary directories
+      TMPDIR: ${{ github.workspace }}/tmp
+      TEMP: ${{ github.workspace }}/tmp
+      TMP: ${{ github.workspace }}/tmp
+      # Hugging Face cache
+      HF_HOME: ${{ github.workspace }}/hf_home
 
     steps:
+      - name: Install free (procps)
+        run: sudo apt-get update && sudo apt-get install -y procps
+
+      - name: Maximize build disk space
+        uses: easimon/maximize-build-space@master
+        with:
+          remove-android: 'true'        # +10 GB
+          remove-dotnet: 'true'         # +3 GB
+          remove-haskell: 'true'        # +2 GB
+          remove-docker-images: 'true'  # +3 GB
+
       - name: Checkout code
         uses: actions/checkout@v5
 
@@ -34,13 +57,12 @@ jobs:
         if: runner.os == 'Windows'
         run: choco install vcredist2017 -y
 
-      - name: Set up Conda with Mamba
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          use-mamba: false
-          python-version: 3.11
-          auto-activate-base: false
-          miniforge-variant: Miniforge3
+      - name: Install Miniconda manually in workspace
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/tmp
+          curl -sL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -o miniforge.sh
+          bash miniforge.sh -b -p $GITHUB_WORKSPACE/miniconda3
+          echo "$GITHUB_WORKSPACE/miniconda3/bin" >> $GITHUB_PATH
 
       - name: Create environment
         run: |

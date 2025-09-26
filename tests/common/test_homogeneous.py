@@ -19,7 +19,9 @@ class Test_Base_Torch:
             dataset, scalar_features_ids, field_features_ids
         )
 
-        bridge.restore(dataset, [np.zeros((2, 3)), np.ones((3, 4))], field_features_ids)
+        bridge.restore(
+            dataset, [np.zeros((2, 3)), 1.0 + np.ones((2, 3))], field_features_ids
+        )
 
         print(homogen_dataset)
         len(homogen_dataset)
