@@ -55,6 +55,8 @@ jobs:
           python-version: 3.11
           auto-activate-base: false
           miniforge-variant: Miniforge3
+        env:
+          CONDA_PKGS_DIRS: ${{ github.workspace }}/conda_pkgs_dir
 
       - name: Create environment
         run: |
