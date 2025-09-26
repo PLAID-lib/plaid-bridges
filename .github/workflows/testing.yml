@@ -38,17 +38,6 @@ jobs:
 
     steps:
 
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Create temp directories
-        run: |
-          mkdir -p $GITHUB_WORKSPACE/tmp
-          mkdir -p $GITHUB_WORKSPACE/conda_pkgs_dir
-          mkdir -p $GITHUB_WORKSPACE/conda_envs
-          mkdir -p $GITHUB_WORKSPACE/.pip_cache
-          mkdir -p $GITHUB_WORKSPACE/miniconda3
-
       - name: Install free (procps)
         run: sudo apt-get update && sudo apt-get install -y procps
 
@@ -62,6 +51,17 @@ jobs:
           # remove-tool-cache: 'true'
           # remove-swapfile: 'false'
           # build-mount-path: '/var/lib/docker'
+
+      - name: Create temp directories
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/tmp
+          mkdir -p $GITHUB_WORKSPACE/conda_pkgs_dir
+          mkdir -p $GITHUB_WORKSPACE/conda_envs
+          mkdir -p $GITHUB_WORKSPACE/.pip_cache
+          mkdir -p $GITHUB_WORKSPACE/miniconda3
+
+      - name: Checkout code
+        uses: actions/checkout@v5
 
       - name: Install VC++ runtime (Windows only)
         if: runner.os == 'Windows'
