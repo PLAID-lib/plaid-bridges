@@ -112,6 +112,7 @@ jobs:
       - name: Run examples on Linux
         if: runner.os == 'Linux'
         run: |
+          HF_HOME=$GITHUB_WORKSPACE/hf_home
           cd examples
           conda run -n plaid-bridges bash run_examples.sh
 
