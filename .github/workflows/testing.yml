@@ -77,6 +77,12 @@ jobs:
       - name: Install Miniconda manually in workspace
         run: |
           rm -rf $GITHUB_WORKSPACE/miniconda3
+          CONDA_PKGS_DIRS=$GITHUB_WORKSPACE/conda_pkgs_dir \
+          CONDA_ENVS_PATH=$GITHUB_WORKSPACE/conda_envs \
+          PIP_CACHE_DIR=$GITHUB_WORKSPACE/.pip_cache \
+          TMPDIR=$GITHUB_WORKSPACE/tmp \
+          TEMP=$GITHUB_WORKSPACE/tmp \
+          TMP=$GITHUB_WORKSPACE/tmp \
           curl -sL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -o miniforge.sh
           bash miniforge.sh -b -p $GITHUB_WORKSPACE/miniconda3
           echo "$GITHUB_WORKSPACE/miniconda3/bin" >> $GITHUB_PATH
