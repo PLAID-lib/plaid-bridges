@@ -27,6 +27,9 @@ jobs:
             python-version: 3.13
 
     steps:
+      - name: Install free (procps)
+        run: sudo apt-get update && sudo apt-get install -y procps
+
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
         with:
