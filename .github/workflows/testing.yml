@@ -55,8 +55,8 @@ jobs:
           remove-dotnet: 'true'         # +3 GB
           remove-haskell: 'true'        # +2 GB
           remove-docker-images: 'true'  # +3 GB
-          remove-tool-cache: 'true'
-          remove-swapfile: 'false'
+          # remove-tool-cache: 'true'
+          # remove-swapfile: 'false'
           # build-mount-path: '/var/lib/docker'
 
       - name: Checkout code
