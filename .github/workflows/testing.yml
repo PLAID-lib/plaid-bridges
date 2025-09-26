@@ -25,6 +25,8 @@ jobs:
         # exclude:
         #   - os: macos-latest
         #     python-version: 3.13
+    env:
+      CONDA_PKGS_DIRS: ${{ github.workspace }}/conda_pkgs_dir
 
     steps:
       - name: Install free (procps)
@@ -55,15 +57,11 @@ jobs:
           python-version: 3.11
           auto-activate-base: false
           miniforge-variant: Miniforge3
-        env:
-          CONDA_PKGS_DIRS: ${{ github.workspace }}/conda_pkgs_dir
 
       - name: Create environment
         run: |
           conda create -n plaid-bridges python=${{ matrix.python-version }} hdf5 "vtk>=9.4" pycgns-core muscat-core=2.5 -c conda-forge
           conda run -n plaid-bridges python -m pip install -e .[dev]
-        env:
-          CONDA_PKGS_DIRS: ${{ github.workspace }}/conda_pkgs_dir
 
       - name: Install library in dev mode
         run: |
