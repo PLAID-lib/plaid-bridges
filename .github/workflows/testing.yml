@@ -30,12 +30,16 @@ jobs:
       - name: Install free (procps)
         run: sudo apt-get update && sudo apt-get install -y procps
 
-      # - name: Maximize build space
-      #   uses: easimon/maximize-build-space@master
-      #   with:
-      #     root-reserve-mb: 512
-      #     swap-size-mb: 1024
-      #     remove-dotnet: 'true'
+      - name: Maximize build disk space
+        uses: easimon/maximize-build-space@master
+        with:
+          remove-android: 'true'        # +10 GB
+          remove-dotnet: 'true'         # +3 GB
+          remove-haskell: 'true'        # +2 GB
+          remove-docker-images: 'true'  # +3 GB
+          # remove-swapfile: 'false'
+          # remove-tool-cache: 'true'
+          # build-mount-path: '/var/lib/docker'
 
       - name: Checkout code
         uses: actions/checkout@v5
