@@ -28,6 +28,7 @@ jobs:
     env:
       CONDA_PKGS_DIRS: ${{ github.workspace }}/conda_pkgs_dir
       CONDA_ENVS_PATH: ${{ github.workspace }}/conda_envs
+      PIP_CACHE_DIR: ${{ github.workspace }}/.pip_cache
 
     steps:
       - name: Install free (procps)
