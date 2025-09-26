@@ -27,6 +27,7 @@ jobs:
         #     python-version: 3.13
     env:
       CONDA_PKGS_DIRS: ${{ github.workspace }}/conda_pkgs_dir
+      CONDA_ENVS_PATH: ${{ github.workspace }}/conda_envs
 
     steps:
       - name: Install free (procps)
