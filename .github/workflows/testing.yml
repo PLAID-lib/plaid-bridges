@@ -62,6 +62,8 @@ jobs:
         run: |
           conda create -n plaid-bridges python=${{ matrix.python-version }} hdf5 "vtk>=9.4" pycgns-core muscat-core=2.5 -c conda-forge
           conda run -n plaid-bridges python -m pip install -e .[dev]
+        env:
+          CONDA_PKGS_DIRS: ${{ github.workspace }}/conda_pkgs_dir
 
       - name: Install library in dev mode
         run: |
