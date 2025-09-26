@@ -17,6 +17,18 @@ jobs:
   doc:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    env:
+      # Conda configuration
+      CONDA_PKGS_DIRS: ${{ github.workspace }}/conda_pkgs_dir
+      CONDA_ENVS_PATH: ${{ github.workspace }}/conda_envs
+      # Pip cache
+      PIP_CACHE_DIR: ${{ github.workspace }}/.pip_cache
+      # Temporary directories
+      TMPDIR: ${{ github.workspace }}/tmp
+      TEMP: ${{ github.workspace }}/tmp
+      TMP: ${{ github.workspace }}/tmp
+      # Hugging Face cache
+      HF_HOME: ${{ github.workspace }}/hf_home
 
     steps:
       - name: Install free (procps)
@@ -37,27 +49,9 @@ jobs:
         if: runner.os == 'Windows'
         run: choco install vcredist2017 -y
 
-      # - name: Set up Conda with Mamba
-      #   uses: conda-incubator/setup-miniconda@v2
-      #   with:
-      #     use-mamba: false
-      #     python-version: 3.11
-      #     auto-activate-base: false
-      #     miniforge-variant: Miniforge3
-
       - name: Install Miniconda manually in workspace
         run: |
-          rm -rf $GITHUB_WORKSPACE/miniconda3
           mkdir -p $GITHUB_WORKSPACE/tmp
-          mkdir -p $GITHUB_WORKSPACE/conda_pkgs_dir
-          mkdir -p $GITHUB_WORKSPACE/conda_envs
-          mkdir -p $GITHUB_WORKSPACE/.pip_cache
-          export CONDA_PKGS_DIRS=$GITHUB_WORKSPACE/conda_pkgs_dir
-          export CONDA_ENVS_PATH=$GITHUB_WORKSPACE/conda_envs
-          export PIP_CACHE_DIR=$GITHUB_WORKSPACE/.pip_cache
-          export TMPDIR=$GITHUB_WORKSPACE/tmp
-          export TEMP=$GITHUB_WORKSPACE/tmp
-          export TMP=$GITHUB_WORKSPACE/tmp
           curl -sL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -o miniforge.sh
           bash miniforge.sh -b -p $GITHUB_WORKSPACE/miniconda3
           echo "$GITHUB_WORKSPACE/miniconda3/bin" >> $GITHUB_PATH
@@ -69,31 +63,5 @@ jobs:
 
       - name: Compile documentation
         run: |
-          export HF_HOME=$GITHUB_WORKSPACE/hf_home
           cd docs
           conda run -n plaid-bridges bash generate_doc.sh
-
-      # - name: Checkout code
-      #   uses: actions/checkout@v5
-
-      # - name: Install packages
-      #   run: sudo apt-get install -y libgl1 mesa-utils
-
-      # - name: Set up Env with Mamba
-      #   uses: conda-incubator/setup-miniconda@v3
-      #   with:
-      #     use-mamba: true
-      #     python-version: 3.11
-      #     activate-environment: plaid-bridges
-      #     environment-file: environment.yml
-      #     auto-activate-base: false
-      #     miniforge-variant: Miniforge3
-
-      # - name: Install library in dev mode
-      #   run: |
-      #     conda run -n plaid-bridges pip install -e .[dev]
-
-      # - name: Compile documentation
-      #   run: |
-      #     cd docs
-      #     conda run -n plaid-bridges bash generate_doc.sh
