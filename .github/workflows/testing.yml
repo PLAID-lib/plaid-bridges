@@ -58,7 +58,6 @@ jobs:
           mkdir -p $GITHUB_WORKSPACE/conda_pkgs_dir
           mkdir -p $GITHUB_WORKSPACE/conda_envs
           mkdir -p $GITHUB_WORKSPACE/.pip_cache
-          mkdir -p $GITHUB_WORKSPACE/miniconda3
 
       - name: Checkout code
         uses: actions/checkout@v5
@@ -77,6 +76,8 @@ jobs:
 
       - name: Install Miniconda manually in workspace
         run: |
+          mkdir -p $GITHUB_WORKSPACE/miniconda3
+          echo $GITHUB_WORKSPACE/miniconda3
           TMPDIR=$GITHUB_WORKSPACE/tmp \
           TEMP=$GITHUB_WORKSPACE/tmp \
           TMP=$GITHUB_WORKSPACE/tmp \
