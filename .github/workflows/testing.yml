@@ -74,12 +74,12 @@ jobs:
           mkdir -p $GITHUB_WORKSPACE/conda_pkgs_dir
           mkdir -p $GITHUB_WORKSPACE/conda_envs
           mkdir -p $GITHUB_WORKSPACE/.pip_cache
-          CONDA_PKGS_DIRS=$GITHUB_WORKSPACE/conda_pkgs_dir \
-          CONDA_ENVS_PATH=$GITHUB_WORKSPACE/conda_envs \
-          PIP_CACHE_DIR=$GITHUB_WORKSPACE/.pip_cache \
-          TMPDIR=$GITHUB_WORKSPACE/tmp \
-          TEMP=$GITHUB_WORKSPACE/tmp \
-          TMP=$GITHUB_WORKSPACE/tmp \
+          export CONDA_PKGS_DIRS=$GITHUB_WORKSPACE/conda_pkgs_dir
+          export CONDA_ENVS_PATH=$GITHUB_WORKSPACE/conda_envs
+          export PIP_CACHE_DIR=$GITHUB_WORKSPACE/.pip_cache
+          export TMPDIR=$GITHUB_WORKSPACE/tmp
+          export TEMP=$GITHUB_WORKSPACE/tmp
+          export TMP=$GITHUB_WORKSPACE/tmp
           curl -sL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -o miniforge.sh
           bash miniforge.sh -b -p $GITHUB_WORKSPACE/miniconda3
           echo "$GITHUB_WORKSPACE/miniconda3/bin" >> $GITHUB_PATH
@@ -112,7 +112,7 @@ jobs:
       - name: Run examples on Linux
         if: runner.os == 'Linux'
         run: |
-          HF_HOME=$GITHUB_WORKSPACE/hf_home
+          export HF_HOME=$GITHUB_WORKSPACE/hf_home
           cd examples
           conda run -n plaid-bridges bash run_examples.sh
 
