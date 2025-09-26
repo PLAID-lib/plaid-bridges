@@ -53,7 +53,7 @@ jobs:
       #     auto-activate-base: false
       #     miniforge-variant: Miniforge3
 
-      - name: Setting up foldes and environment variables
+      - name: Install Miniconda manually in workspace
         run: |
           rm -rf $GITHUB_WORKSPACE/miniconda3
           mkdir -p $GITHUB_WORKSPACE/tmp
@@ -66,10 +66,6 @@ jobs:
           export TMPDIR=$GITHUB_WORKSPACE/tmp
           export TEMP=$GITHUB_WORKSPACE/tmp
           export TMP=$GITHUB_WORKSPACE/tmp
-          export HF_HOME=$GITHUB_WORKSPACE/hf_home
-
-      - name: Install Miniconda manually in workspace
-        run: |
           curl -sL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -o miniforge.sh
           bash miniforge.sh -b -p $GITHUB_WORKSPACE/miniconda3
           echo "$GITHUB_WORKSPACE/miniconda3/bin" >> $GITHUB_PATH
@@ -98,6 +94,7 @@ jobs:
       - name: Run examples on Linux
         if: runner.os == 'Linux'
         run: |
+          export HF_HOME=$GITHUB_WORKSPACE/hf_home
           cd examples
           conda run -n plaid-bridges bash run_examples.sh
 
